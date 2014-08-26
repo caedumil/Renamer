@@ -33,8 +33,11 @@ class Episode():
         self.episode = episode
         self.name = name
 
-    def get_name(self):
-        return "{0}x{1} - {2}".format(self.season, self.episode, self.name)
+    def get_name(self, extension="new"):
+        self.ext = extension
+
+        return "{0}x{1} - {2}.{3}".format(
+            self.season, self.episode, self.name, self.ext)
 
 class LFile():
     def __init__(self, filename, path):
@@ -45,7 +48,7 @@ class LFile():
     def rename(self, epname):
         self.epname = epname
         self.fullfname = os.path.join(self.path, self.filename)
-        self.fullename = os.path.join(self.path, self.epname) + "." + self.ext
+        self.fullename = os.path.join(self.path, self.epname)
 
         os.rename(self.fullfname, self.fullename)
 
@@ -105,8 +108,8 @@ except FileNotFoundError as err:
 # Ask to proceed
 if not args.no_confirm:
     for c in range(0, len(eps)):
-        print("<<< {0}\n>>> {1}.{2}".format(
-            vid[c].filename, eps[c].get_name(), vid[c].ext))
+        print("<<< {0}\n>>> {1}".format(
+            vid[c].filename, eps[c].get_name(vid[c].ext)))
 
     anws = input("Apply changes? [Y/n]: ")
     if anws in ["N", "n"]:
@@ -117,8 +120,8 @@ if not args.no_confirm:
 try:
     for c in range(0, len(eps)):
         if sub:
-            sub[c].rename(eps[c].get_name())
-        vid[c].rename(eps[c].get_name())
+            sub[c].rename(eps[c].get_name(sub[c].ext))
+        vid[c].rename(eps[c].get_name(vid[c].ext))
 
     excode = 0
 
