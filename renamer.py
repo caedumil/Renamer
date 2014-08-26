@@ -24,6 +24,7 @@
 
 import os
 import re
+import sys
 import argparse
 
 # Classes definitions
@@ -101,8 +102,9 @@ try:
             eps.append(Episode("%02i"%args.season, ep_num, ep_name))
 
 except FileNotFoundError as err:
+    print("ERROR!")
     print("{0} - {1}".format(err.filename, err.strerror))
-    exit(err.errno)
+    sys.exit(err.errno)
 
 # Print changes to stdout if confirmation is set
 # Ask to proceed
@@ -114,7 +116,7 @@ if not args.no_confirm:
     anws = input("Apply changes? [Y/n]: ")
     if anws in ["N", "n"]:
         print("Aborting now.")
-        exit(1)
+        sys.exit(1)
 
 # Apply name changes to all files
 try:
@@ -123,12 +125,11 @@ try:
             sub[c].rename(eps[c].get_name(sub[c].ext))
         vid[c].rename(eps[c].get_name(vid[c].ext))
 
-    excode = 0
-
 except OSError as err:
-    print("{}".format(err.strerror))
-    excode = err.errno
+    print("ERROR!")
+    print("{0} - {1}".format(err.filename, err.strerror))
+    sys.exit(err.errno)
 
-finally:
+else:
     print("Done")
-    exit(excode)
+    sys.exit(os.EX_OK)
