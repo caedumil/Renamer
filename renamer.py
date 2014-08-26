@@ -67,11 +67,12 @@ vid = []
 sub = []
 
 # Get all files inside the directory
+# Sort list of files, case insensitive
 # Use the files to create LFiles objects
 # Append videos file object to vid list
 # Append subtitle file object to sub list
 dir_list = os.listdir(args.path)
-dir_list.sort()
+dir_list.sort(key=lambda s: s.lower())
 
 for fl in dir_list:
     if ".srt" in fl:
