@@ -104,8 +104,8 @@ except FileNotFoundError as err:
 # Ask to proceed
 if not args.no_confirm:
     for c in range(0, len(eps)):
-        print("    {0}.{1}\n{2}".format(
-            eps[c].get_name(), vid[c].ext, vid[c].filename))
+        print("<<< {0}\n>>> {1}.{2}".format(
+            vid[c].filename, eps[c].get_name(), vid[c].ext))
 
     anws = input("Apply changes? [Y/n]: ")
     if anws in ["N", "n"]:
