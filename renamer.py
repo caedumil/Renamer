@@ -97,6 +97,7 @@ try:
                 break
 
             ep_num, ep_name = regex.split(line)
+            ep_num = "%02i"%(int(ep_num))
             ep_name = ep_name.replace("\n", "")
 
             eps.append(Episode("%02i"%args.season, ep_num, ep_name))
