@@ -106,6 +106,11 @@ except FileNotFoundError as err:
     print("{0} - {1}".format(err.filename, err.strerror))
     sys.exit(err.errno)
 
+except ValueError:
+    print("ERROR!")
+    print("Missing field in {} file".format(args.file))
+    sys.exit(1)
+
 # Print changes to stdout if confirmation is set
 # Ask to proceed
 if not args.no_confirm:
