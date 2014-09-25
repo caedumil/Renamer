@@ -30,8 +30,8 @@ import argparse
 # Classes definitions
 class Episode():
     def __init__(self, season, episode, name):
-        self.season = season
-        self.episode = episode
+        self.season = "%02i"%(int(season))
+        self.episode = "%02i"%(int(episode))
         self.name = name
 
     def get_name(self, extension="new"):
@@ -97,10 +97,9 @@ try:
                 break
 
             ep_num, ep_name = regex.split(line)
-            ep_num = "%02i"%(int(ep_num))
             ep_name = ep_name.replace("\n", "")
 
-            eps.append(Episode("%02i"%args.season, ep_num, ep_name))
+            eps.append(Episode(args.season, ep_num, ep_name))
 
 except FileNotFoundError as err:
     print("ERROR!")
