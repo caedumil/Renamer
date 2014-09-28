@@ -55,14 +55,16 @@ class LFile():
 
 # Command-line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--season", type=int, required=True,
-    help="Season number")
-parser.add_argument("-p", "--path", type=str, required=True,
-    help="Folder PATH")
-parser.add_argument("-f", "--file", type=str, required=True,
-    help="Episodes FILE")
+
 parser.add_argument("--no-confirm", action="store_true",
     help="Don not ask for confirmation")
+parser.add_argument("-s", "--season", type=int, required=True,
+    help="Season number")
+parser.add_argument("-f", "--file", type=str, required=True,
+    help="Episodes FILE")
+parser.add_argument("path", type=str, metavar="FOLDER",
+    help="FOLDER path")
+
 args = parser.parse_args()
 
 # Initialize lists
