@@ -26,6 +26,7 @@ import os
 import re
 import sys
 import argparse
+import mimetypes
 
 # Classes definitions
 class LFile():
@@ -79,21 +80,19 @@ sub = []
 # Sort list of files, case insensitive
 # Use the files to create separate lists for video
 # and subtitles
-dir_list = os.listdir(args.path)
-dir_list.sort(key=lambda s: s.lower())
-
-for fl in dir_list:
-    if ".srt" in fl:
-        sub.append(fl)
-    else:
-        vid.append(fl)
-
+#
 # Use regular expression to parse the file
 # Read and parse the file content
 # Append Episode objects to eps_* list
 regex = re.compile('; ')
 
 try:
+    dir_list = os.listdir(args.path)
+    dir_list.sort(key=lambda s: s.lower())
+
+    vid = [ x for x in dir_list if "video" in mimetypes.guess_type(x)[0] ]
+    sub = [ x for x in dir_list if "text" in mimetypes.guess_type(x)[0] ]
+
     with open(args.file) as arq:
         c = 0
         while(True):
