@@ -28,30 +28,32 @@ import sys
 import argparse
 
 # Classes definitions
-class Episode():
-    def __init__(self, season, episode, name):
-        self.season = "%02i"%(int(season))
-        self.episode = "%02i"%(int(episode))
-        self.name = name
-
-    def get_name(self, extension="new"):
-        self.ext = extension
-
-        return "{0}x{1} - {2}.{3}".format(
-            self.season, self.episode, self.name, self.ext)
-
 class LFile():
     def __init__(self, filename, path):
         self.filename = filename
         self.path = path
         self.ext = filename.split(".")[-1]
 
-    def rename(self, epname):
-        self.epname = epname
-        self.fullfname = os.path.join(self.path, self.filename)
-        self.fullename = os.path.join(self.path, self.epname)
+    def rename(self, ename):
+        self.full_fname = os.path.join(self.path, self.filename)
+        self.full_ename = os.path.join(self.path, ename)
 
-        os.rename(self.fullfname, self.fullename)
+        os.rename(self.full_fname, self.full_ename)
+
+class Episode(LFile):
+    def __init__(self, season, enumber, ename, fname, fpath):
+        super().__init__(fname, fpath)
+        self.season = "%02i"%(int(season))
+        self.enumber = "%02i"%(int(enumber))
+        self.ename = ename
+        self.full_ename = "{0}x{1} - {2}.{3}".format(
+            self.season, self.enumber, self.ename, super().ext)
+
+    def rename(self):
+        super().rename(self.full_ename)
+
+    def ___str___(self):
+        return ">>> {0}\n<<< {1}".format(super().filename, self.full_ename)
 
 # Command-line arguments
 parser = argparse.ArgumentParser()
@@ -68,31 +70,32 @@ parser.add_argument("path", type=str, metavar="FOLDER",
 args = parser.parse_args()
 
 # Initialize lists
-eps = []
+eps_v = []
+eps_s = []
 vid = []
 sub = []
 
 # Get all files inside the directory
 # Sort list of files, case insensitive
-# Use the files to create LFiles objects
-# Append videos file object to vid list
-# Append subtitle file object to sub list
+# Use the files to create separate lists for video
+# and subtitles
 dir_list = os.listdir(args.path)
 dir_list.sort(key=lambda s: s.lower())
 
 for fl in dir_list:
     if ".srt" in fl:
-        sub.append(LFile(fl, args.path))
+        sub.append(fl)
     else:
-        vid.append(LFile(fl, args.path))
+        vid.append(fl)
 
 # Use regular expression to parse the file
 # Read and parse the file content
-# Append Episode objects to eps list
+# Append Episode objects to eps_* list
 regex = re.compile('; ')
 
 try:
     with open(args.file) as arq:
+        c = 0
         while(True):
             line = arq.readline()
             if not line:
@@ -101,7 +104,12 @@ try:
             ep_num, ep_name = regex.split(line)
             ep_name = ep_name.replace("\n", "")
 
-            eps.append(Episode(args.season, ep_num, ep_name))
+            eps_v.append(Episode(
+                args.season, ep_num, ep_name, vid[c], args.path))
+            eps_s.append(Episode(
+                args.season, ep_num, ep_name, sub[c], args.path))
+
+            c += 1
 
 except FileNotFoundError as err:
     print("ERROR!")
@@ -117,8 +125,7 @@ except ValueError:
 # Ask to proceed
 if not args.no_confirm:
     for c in range(0, len(eps)):
-        print("<<< {0}\n>>> {1}".format(
-            vid[c].filename, eps[c].get_name(vid[c].ext)))
+        print(eps_v[c])
 
     anws = input("Apply changes? [Y/n]: ")
     if anws in ["N", "n"]:
@@ -127,10 +134,10 @@ if not args.no_confirm:
 
 # Apply name changes to all files
 try:
-    for c in range(0, len(eps)):
+    for c in range(0, len(eps_v)):
         if sub:
-            sub[c].rename(eps[c].get_name(sub[c].ext))
-        vid[c].rename(eps[c].get_name(vid[c].ext))
+            eps_s[c].rename()
+        eps_v[c].rename()
 
 except OSError as err:
     print("ERROR!")
