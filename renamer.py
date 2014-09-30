@@ -84,6 +84,10 @@ sub = []
 # Use regular expression to parse the file
 # Read and parse the file content
 # Append Episode objects to eps_* list
+#
+# Print changes to stdout if confirmation is set
+# Ask to proceed
+# Apply name changes to all files
 regex = re.compile('; ')
 
 try:
@@ -95,6 +99,7 @@ try:
 
     with open(args.file) as arq:
         c = 0
+
         while(True):
             line = arq.readline()
             if not line:
@@ -110,39 +115,35 @@ try:
 
             c += 1
 
-except FileNotFoundError as err:
-    print("ERROR!")
-    print("{0} - {1}".format(err.filename, err.strerror))
-    sys.exit(err.errno)
+    if not args.no_confirm:
+        for c in range(0, len(eps)):
+            print(eps_v[c])
+            if sub:
+                print(eps_s[c])
 
-except ValueError:
-    print("ERROR!")
-    print("Missing field in {} file".format(args.file))
-    sys.exit(1)
+        anws = input("Apply changes? [Y/n]: ")
+        if anws in ["N", "n"]:
+            print("Aborting now.")
+            sys.exit(1)
 
-# Print changes to stdout if confirmation is set
-# Ask to proceed
-if not args.no_confirm:
-    for c in range(0, len(eps)):
-        print(eps_v[c])
-
-    anws = input("Apply changes? [Y/n]: ")
-    if anws in ["N", "n"]:
-        print("Aborting now.")
-        sys.exit(1)
-
-# Apply name changes to all files
-try:
     for c in range(0, len(eps_v)):
         if sub:
             eps_s[c].rename()
         eps_v[c].rename()
 
-except OSError as err:
+except (FileNotFoundError, OSError) as err:
     print("ERROR!")
     print("{0} - {1}".format(err.filename, err.strerror))
-    sys.exit(err.errno)
+    exit_code = err.errno
+
+except ValueError:
+    print("ERROR!")
+    print("Missing field in {} file".format(args.file))
+    exit_code = 1
 
 else:
     print("Done")
-    sys.exit(os.EX_OK)
+    exit_code = os.EX_OK
+
+finally:
+    sys.exit(exit_code)
