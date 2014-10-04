@@ -48,33 +48,53 @@ class Episode(LFile):
         self.enumber = "%02i"%(int(enumber))
         self.ename = ename
         self.full_ename = "{0}x{1} - {2}.{3}".format(
-            self.season, self.enumber, self.ename, super().ext)
+            self.season, self.enumber, self.ename, self.ext)
 
     def rename(self):
         super().rename(self.full_ename)
 
-    def ___str___(self):
-        return ">>> {0}\n<<< {1}".format(super().filename, self.full_ename)
+    def __str__(self):
+        return ">>> {0}\n<<< {1}".format(self.filename, self.full_ename)
+
+# Functions
+def parse_cli():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--no-confirm", action="store_true",
+        help="Don not ask for confirmation")
+    parser.add_argument("-f", "--file", type=str, required=True,
+        help="Episodes FILE")
+    parser.add_argument("path", type=str, metavar="FOLDER",
+        help="FOLDER path")
+
+    return parser.parse_args()
+
+def check_mime(filename, mime):
+    tmp = mimetypes.guess_type(filename)
+
+    if tmp[0] and mime in tmp[0]:
+        return True
+    return False
+
+def parse_file(filename):
+    SxEy = re.compile('(s[0-9]+e[0-9]+|[0-9]+)', re.I)
+    epnum = re.compile('[e0-9]([0-9]+)$', re.I)
+    ssnum = re.compile('^(s[0-9]+|[0-9])', re.I)
+
+    block = SxEy.search(filename).group().lower()
+
+    ep = epnum.search(block).group()[1:]
+
+    ss = ssnum.search(block).group()
+    ss = ss[1:] if "s" in ss else ss
+
+    return ep, ss
 
 # Command-line arguments
-parser = argparse.ArgumentParser()
+args = parse_cli()
 
-parser.add_argument("--no-confirm", action="store_true",
-    help="Don not ask for confirmation")
-parser.add_argument("-s", "--season", type=int, required=True,
-    help="Season number")
-parser.add_argument("-f", "--file", type=str, required=True,
-    help="Episodes FILE")
-parser.add_argument("path", type=str, metavar="FOLDER",
-    help="FOLDER path")
-
-args = parser.parse_args()
-
-# Initialize lists
-eps_v = []
-eps_s = []
-vid = []
-sub = []
+# Initialize list
+eps = []
 
 # Get all files inside the directory
 # Sort list of files, case insensitive
@@ -88,62 +108,66 @@ sub = []
 # Print changes to stdout if confirmation is set
 # Ask to proceed
 # Apply name changes to all files
-regex = re.compile('; ')
-
 try:
     dir_list = os.listdir(args.path)
     dir_list.sort(key=lambda s: s.lower())
 
-    vid = [ x for x in dir_list if "video" in mimetypes.guess_type(x)[0] ]
-    sub = [ x for x in dir_list if "text" in mimetypes.guess_type(x)[0] ]
+    vid = [ x for x in dir_list if check_mime(x, "video") ]
+    sub = [ x for x in dir_list if check_mime(x, "text") ]
 
     with open(args.file) as arq:
-        c = 0
+        content = arq.read()
+        lines = content.splitlines()
 
-        while(True):
-            line = arq.readline()
-            if not line:
-                break
+    c = 0
+    run = True
 
-            ep_num, ep_name = regex.split(line)
-            ep_name = ep_name.replace("\n", "")
+    while( run ):
+        run = False
 
-            eps_v.append(Episode(
-                args.season, ep_num, ep_name, vid[c], args.path))
-            eps_s.append(Episode(
-                args.season, ep_num, ep_name, sub[c], args.path))
+        if c < len(vid):
+            ep_num, ss_num = parse_file(vid[c])
+            ep_name = lines[int(ep_num)-1]
 
-            c += 1
+            eps.append(Episode(
+                ss_num, ep_num, ep_name, vid[c], args.path))
+
+            run = True
+
+        if c < len(sub):
+            ep_num, ss_num = parse_file(sub[c])
+            ep_name = lines[int(ep_num)-1]
+
+            eps.append(Episode(
+                ss_num, ep_num, ep_name, sub[c], args.path))
+
+            run = True
+
+        c += 1
 
     if not args.no_confirm:
         for c in range(0, len(eps)):
-            print(eps_v[c])
-            if sub:
-                print(eps_s[c])
+            print(eps[c])
 
         anws = input("Apply changes? [Y/n]: ")
         if anws in ["N", "n"]:
-            print("Aborting now.")
             sys.exit(1)
 
-    for c in range(0, len(eps_v)):
-        if sub:
-            eps_s[c].rename()
-        eps_v[c].rename()
+    for c in range(0, len(eps)):
+        eps[c].rename()
 
 except (FileNotFoundError, OSError) as err:
-    print("ERROR!")
-    print("{0} - {1}".format(err.filename, err.strerror))
+    msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
     exit_code = err.errno
 
-except ValueError:
-    print("ERROR!")
-    print("Missing field in {} file".format(args.file))
-    exit_code = 1
+except SystemExit as err:
+    msg = "Exit\nExecution terminated by user."
+    exit_code = err.code
 
 else:
-    print("Done")
+    msg = "Done!"
     exit_code = os.EX_OK
 
 finally:
+    print(msg)
     sys.exit(exit_code)
