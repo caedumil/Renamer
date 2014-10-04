@@ -28,20 +28,32 @@ import sys
 import argparse
 import mimetypes
 
-# Classes definitions
+#
+# Classes
+#
 class LFile():
+    '''
+    Local Filesystem.
+    Holds information of the file on disk.
+    '''
     def __init__(self, filename, path):
         self.filename = filename
         self.path = path
         self.ext = filename.split(".")[-1]
 
     def rename(self, ename):
+        '''
+        Rename file using provided string.
+        '''
         self.full_fname = os.path.join(self.path, self.filename)
         self.full_ename = os.path.join(self.path, ename)
 
         os.rename(self.full_fname, self.full_ename)
 
 class Episode(LFile):
+    '''
+    Inherits from LFile.
+    '''
     def __init__(self, season, enumber, ename, fname, fpath):
         super().__init__(fname, fpath)
         self.season = "%02i"%(int(season))
@@ -51,13 +63,21 @@ class Episode(LFile):
             self.season, self.enumber, self.ename, self.ext)
 
     def rename(self):
+        '''
+        Extends superclass method to rename the file on disk.
+        '''
         super().rename(self.full_ename)
 
     def __str__(self):
         return ">>> {0}\n<<< {1}".format(self.filename, self.full_ename)
 
+#
 # Functions
+#
 def parse_cli():
+    '''
+    Set and parse command-line arguments.
+    '''
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--no-confirm", action="store_true",
@@ -70,6 +90,10 @@ def parse_cli():
     return parser.parse_args()
 
 def check_mime(filename, mime):
+    '''
+    Check if file is of a certain mimetype.
+    Return a boolean value.
+    '''
     tmp = mimetypes.guess_type(filename)
 
     if tmp[0] and mime in tmp[0]:
@@ -77,6 +101,9 @@ def check_mime(filename, mime):
     return False
 
 def parse_file(filename):
+    '''
+    Read file name and return the number of season and episode.
+    '''
     SxEy = re.compile('(s[0-9]+e[0-9]+|[0-9]+)', re.I)
     epnum = re.compile('[e0-9]([0-9]+)$', re.I)
     ssnum = re.compile('^(s[0-9]+|[0-9])', re.I)
@@ -90,25 +117,14 @@ def parse_file(filename):
 
     return ep, ss
 
-# Command-line arguments
-args = parse_cli()
-
-# Initialize list
-eps = []
-
-# Get all files inside the directory
-# Sort list of files, case insensitive
-# Use the files to create separate lists for video
-# and subtitles
 #
-# Use regular expression to parse the file
-# Read and parse the file content
-# Append Episode objects to eps_* list
+# Main
 #
-# Print changes to stdout if confirmation is set
-# Ask to proceed
-# Apply name changes to all files
 try:
+    args = parse_cli()
+
+    eps = []
+
     dir_list = os.listdir(args.path)
     dir_list.sort(key=lambda s: s.lower())
 
