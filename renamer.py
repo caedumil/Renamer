@@ -102,20 +102,19 @@ def check_mime(filename, mime):
 
 def parse_file(filename):
     '''
-    Read file name and return the number of season and episode.
+    Read file name and return a tuple with the season and episode numbers.
     '''
-    SxEy = re.compile('(s[0-9]+e[0-9]+|[0-9]+)', re.I)
-    epnum = re.compile('[e0-9]([0-9]+)$', re.I)
-    ssnum = re.compile('^(s[0-9]+|[0-9])', re.I)
+    SxEy = re.compile('(s?[0-9]{,2}[ex]?[0-9]{2,})[a-z\-. ]{3}', re.I)
+    xy = re.compile('(0[1-9]|[1-9][0-9]?)([0-9]{2,})')
 
-    block = SxEy.search(filename).group().lower()
+    block = SxEy.search(filename).group()
+    block = re.sub('[^0-9]', '', block)
 
-    ep = epnum.search(block).group()[1:]
+    pair = xy.search(block)
 
-    ss = ssnum.search(block).group()
-    ss = ss[1:] if "s" in ss else ss
-
-    return ep, ss
+    if pair:
+        return pair.groups()
+    return ('W', 'Y')
 
 #
 # Main
@@ -142,8 +141,9 @@ try:
         run = False
 
         if c < len(vid):
-            ep_num, ss_num = parse_file(vid[c])
-            ep_name = lines[int(ep_num)-1]
+            ss_num, ep_num = parse_file(vid[c])
+            ep_name = ( lines[int(ep_num)-1]
+                if ep_num.isdecimal() else "V {:0>2}".format(c) )
 
             eps.append(Episode(
                 ss_num, ep_num, ep_name, vid[c], args.path))
@@ -151,8 +151,9 @@ try:
             run = True
 
         if c < len(sub):
-            ep_num, ss_num = parse_file(sub[c])
-            ep_name = lines[int(ep_num)-1]
+            ss_num, ep_num = parse_file(sub[c])
+            ep_name = ( lines[int(ep_num)-1]
+                if ep_num.isdecimal() else "S {:0>2}".format(c) )
 
             eps.append(Episode(
                 ss_num, ep_num, ep_name, sub[c], args.path))
