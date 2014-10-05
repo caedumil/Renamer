@@ -120,9 +120,9 @@ def parse_file(filename):
 #
 # Main
 #
-try:
-    args = parse_cli()
+args = parse_cli()
 
+try:
     eps = []
 
     dir_list = os.listdir(args.path)
@@ -174,7 +174,7 @@ try:
     for c in range(0, len(eps)):
         eps[c].rename()
 
-except (FileNotFoundError, OSError) as err:
+except (OSError, IOError) as err:
     msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
     exit_code = err.errno
 
