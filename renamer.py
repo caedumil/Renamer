@@ -56,8 +56,8 @@ class Episode(LFile):
     '''
     def __init__(self, season, enumber, ename, fname, fpath):
         super().__init__(fname, fpath)
-        self.season = "%02i"%(int(season))
-        self.enumber = "%02i"%(int(enumber))
+        self.season = "{:0>2}".format(season)
+        self.enumber = "{:0>2}".format(enumber)
         self.ename = ename
         self.full_ename = "{0}x{1} - {2}.{3}".format(
             self.season, self.enumber, self.ename, self.ext)
