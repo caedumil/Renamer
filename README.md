@@ -5,13 +5,11 @@ season number, episode number and episode name.
 
 ## How to use?
 
-    renamer.py [-h] -s SEASON -p PATH -f FILE
+    renamer.py [-h] -f FILE FOLDER
 
 * `-h` help message
-* `-s` number of the season
-* `-p` folder path
 * `-f` file with episodes names
+* FOLDER path
 
-The episode file is a CSV-style file with one episode per line, like this:
-
-    [episode number]; [episode name]
+The FILE is a plain text file with one episode name per line.  
+In the case of a 00 episode, the name must be the last one.
