@@ -122,6 +122,9 @@ def parse_file(filename):
 #
 args = parse_cli()
 
+exit_msg = "Done!"
+exit_code = os.EX_OK
+
 try:
     eps = []
 
@@ -175,17 +178,13 @@ try:
         eps[c].rename()
 
 except (OSError, IOError) as err:
-    msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
+    exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
     exit_code = err.errno
 
 except SystemExit as err:
-    msg = "Exit\nExecution terminated by user."
+    exit_msg = "Exit\nExecution terminated by user."
     exit_code = err.code
 
-else:
-    msg = "Done!"
-    exit_code = os.EX_OK
-
 finally:
-    print(msg)
+    print(exit_msg)
     sys.exit(exit_code)
