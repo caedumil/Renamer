@@ -80,6 +80,8 @@ def parse_cli():
     '''
     parser = argparse.ArgumentParser()
 
+    parser.add_argument("-v", "--version", action="version",
+        version="%(prog)s -- dev build")
     parser.add_argument("--no-confirm", action="store_true",
         help="Don not ask for confirmation")
     parser.add_argument("-f", "--file", type=str, required=True,
