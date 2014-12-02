@@ -106,7 +106,7 @@ def parse_file(filename):
     '''
     Read file name and return a tuple with the season and episode numbers.
     '''
-    SxEy = re.compile('(\.\d{4})?\.(\.?\d{2}\.\d{2,}|\d{3,})\.', re.I)
+    SxEy = re.compile('(\.\d{4})?\.(\.?\d{1,2}\.\d{2,}|\d{3,})\.', re.I)
     xy = re.compile('(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})')
 
     namestring = re.sub('[^0-9]', '.', filename)
