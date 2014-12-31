@@ -54,13 +54,9 @@ class Episode(LFile):
     '''
     Inherits from LFile.
     '''
-    def __init__(self, season, enumber, ename, fname, fpath):
+    def __init__(self, ename, fname, fpath):
         super().__init__(fname, fpath)
-        self.season = "{:0>2}".format(season)
-        self.enumber = "{:0>2}".format(enumber)
-        self.ename = ename
-        self.full_ename = "{0}x{1} - {2}.{3}".format(
-            self.season, self.enumber, self.ename, self.ext)
+        self.full_ename = "{}.{}".format(ename, self.ext)
 
     def rename(self):
         '''
@@ -119,6 +115,29 @@ def parse_file(filename):
         return pair.groups()
     return ('WW', 'YY')
 
+def is_comment(string):
+    '''
+    Check if the line is a comment
+    (the first character is a '#').
+    '''
+    comm = re.compile('^#\w?', re.I)
+
+    return True if comm.search(string) else False
+
+def get_new_name(names_list, filename):
+    '''
+    Return the formatted file name.
+    '''
+    ss_num, ep_num = parse_file(filename)
+    ep_name = (
+        names_list[int(ep_num)-1] if ep_num.isdecimal() else "..."
+        )
+
+    if int(ep_num) < len(names_list) and is_comment(names_list[int(ep_num)]):
+        ep_num = "{:0>2}-{:0>2}".format(ep_num, int(ep_num)+1)
+
+    return "{0}x{1} - {2}".format(ss_num, ep_num, ep_name)
+
 #
 # Main
 #
@@ -147,22 +166,12 @@ try:
         run = False
 
         if c < len(vid):
-            ss_num, ep_num = parse_file(vid[c])
-            ep_name = ( lines[int(ep_num)-1]
-                if ep_num.isdecimal() else "V {:0>2}".format(c) )
-
-            eps.append(Episode(
-                ss_num, ep_num, ep_name, vid[c], args.path))
+            eps.append(Episode(get_new_name(lines, vid[c]), vid[c], args.path))
 
             run = True
 
         if c < len(sub):
-            ss_num, ep_num = parse_file(sub[c])
-            ep_name = ( lines[int(ep_num)-1]
-                if ep_num.isdecimal() else "S {:0>2}".format(c) )
-
-            eps.append(Episode(
-                ss_num, ep_num, ep_name, sub[c], args.path))
+            eps.append(Episode(get_new_name(lines, sub[c]), sub[c], args.path))
 
             run = True
 
