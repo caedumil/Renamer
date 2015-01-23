@@ -31,41 +31,26 @@ import mimetypes
 #
 # Classes
 #
-class LFile():
+class Episode():
     '''
-    Local Filesystem.
-    Holds information of the file on disk.
-    '''
-    def __init__(self, filename, path):
-        self.filename = filename
-        self.path = path
-        self.ext = filename.split(".")[-1]
-
-    def rename(self, ename):
-        '''
-        Rename file using provided string.
-        '''
-        self.full_fname = os.path.join(self.path, self.filename)
-        self.full_ename = os.path.join(self.path, ename)
-
-        os.rename(self.full_fname, self.full_ename)
-
-class Episode(LFile):
-    '''
-    Inherits from LFile.
+    Represents the episode file on disk.
     '''
     def __init__(self, ename, fname, fpath):
-        super().__init__(fname, fpath)
-        self.full_ename = "{}.{}".format(ename, self.ext)
-
-    def rename(self):
-        '''
-        Extends superclass method to rename the file on disk.
-        '''
-        super().rename(self.full_ename)
+        self.full_ename = "{}.{}".format(ename, fname.split(".")[-1])
+        self.filename = fname
+        self.path = fpath
 
     def __str__(self):
         return ">>> {0}\n<<< {1}".format(self.filename, self.full_ename)
+
+    def rename(self):
+        '''
+        Rename the file.
+        '''
+        self.fname_on_disk = os.path.join(self.path, self.filename)
+        self.ename_on_disk = os.path.join(self.path, self.full_ename)
+
+        os.rename(self.fname_on_disk, self.ename_on_disk)
 
 #
 # Functions
