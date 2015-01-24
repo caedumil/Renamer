@@ -83,42 +83,25 @@ def check_mime(filename, mime):
         return True
     return False
 
-def parse_file(filename):
+def get_new_name(names_list, filename):
     '''
-    Read file name and return a tuple with the season and episode numbers.
+    Parse filename to get values for episode and season numbers and
+    find the correct string to rename the file.
     '''
     SxEy = re.compile('(\.\d{4})?\.(\.?\d{1,2}\.\d{2,}|\d{3,})\.', re.I)
     xy = re.compile('(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})')
 
+    comm = (lambda x: True if re.search('^#\w?', x, re.I) else False)
+
     namestring = re.sub('[^0-9]', '.', filename)
+    pair = xy.search(SxEy.search(namestring).group(2))
 
-    block = SxEy.search(namestring).group(2)
-
-    pair = xy.search(block)
-
-    if pair:
-        return pair.groups()
-    return ('WW', 'YY')
-
-def is_comment(string):
-    '''
-    Check if the line is a comment
-    (the first character is a '#').
-    '''
-    comm = re.compile('^#\w?', re.I)
-
-    return True if comm.search(string) else False
-
-def get_new_name(names_list, filename):
-    '''
-    Return the formatted file name.
-    '''
-    ss_num, ep_num = parse_file(filename)
+    ss_num, ep_num = pair.groups() if pair else ("WW", "YY")
     ep_name = (
         names_list[int(ep_num)-1] if ep_num.isdecimal() else "..."
         )
 
-    if int(ep_num) < len(names_list) and is_comment(names_list[int(ep_num)]):
+    if int(ep_num) < len(names_list) and comm(names_list[int(ep_num)]):
         ep_num = "{:0>2}-{:0>2}".format(ep_num, int(ep_num)+1)
 
     return "{0}x{1} - {2}".format(ss_num, ep_num, ep_name)
