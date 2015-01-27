@@ -26,7 +26,6 @@ import os
 import re
 import sys
 import argparse
-import mimetypes
 
 #
 # Classes
@@ -72,17 +71,6 @@ def parse_cli():
 
     return parser.parse_args()
 
-def check_mime(filename, mime):
-    '''
-    Check if file is of a certain mimetype.
-    Return a boolean value.
-    '''
-    tmp = mimetypes.guess_type(filename)
-
-    if tmp[0] and mime in tmp[0]:
-        return True
-    return False
-
 def get_new_name(names_list, filename):
     '''
     Parse filename to get values for episode and season numbers and
@@ -96,10 +84,11 @@ def get_new_name(names_list, filename):
     namestring = re.sub('[^0-9]', '.', filename)
     pair = xy.search(SxEy.search(namestring).group(2))
 
-    ss_num, ep_num = pair.groups() if pair else ("WW", "YY")
-    ep_name = (
-        names_list[int(ep_num)-1] if ep_num.isdecimal() else "..."
-        )
+    if not pair:
+        return None
+
+    ss_num, ep_num = pair.groups()
+    ep_name = names_list[int(ep_num)-1]
 
     if int(ep_num) < len(names_list) and comm(names_list[int(ep_num)]):
         ep_num = "{:0>2}-{:0>2}".format(ep_num, int(ep_num)+1)
@@ -117,11 +106,8 @@ exit_code = os.EX_OK
 try:
     eps = []
 
-    dir_list = os.listdir(args.path)
-    dir_list.sort(key=lambda s: s.lower())
-
-    vid = [ x for x in dir_list if check_mime(x, "video") ]
-    sub = [ x for x in dir_list if check_mime(x, "text") ]
+    files = os.listdir(args.path)
+    files.sort(key=lambda s: s.lower())
 
     with open(args.file) as arq:
         content = arq.read()
@@ -133,13 +119,11 @@ try:
     while( run ):
         run = False
 
-        if c < len(vid):
-            eps.append(Episode(get_new_name(lines, vid[c]), vid[c], args.path))
+        if c < len(files):
+            ep_name = get_new_name(lines, files[c])
 
-            run = True
-
-        if c < len(sub):
-            eps.append(Episode(get_new_name(lines, sub[c]), sub[c], args.path))
+            if ep_name:
+                eps.append(Episode(ep_name, files[c], args.path))
 
             run = True
 
