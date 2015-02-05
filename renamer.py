@@ -104,8 +104,6 @@ exit_msg = "Done!"
 exit_code = os.EX_OK
 
 try:
-    eps = []
-
     files = os.listdir(args.path)
     files.sort(key=lambda s: s.lower())
 
@@ -113,32 +111,20 @@ try:
         content = arq.read()
         lines = content.splitlines()
 
-    c = 0
-    run = True
+    names = { x:get_new_name(lines, x) for x in files }
 
-    while( run ):
-        run = False
-
-        if c < len(files):
-            ep_name = get_new_name(lines, files[c])
-
-            if ep_name:
-                eps.append(Episode(ep_name, files[c], args.path))
-
-            run = True
-
-        c += 1
+    eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
 
     if not args.no_confirm:
-        for c in range(0, len(eps)):
-            print(eps[c])
+        for ep in eps:
+            print(ep)
 
         anws = input("Apply changes? [Y/n]: ")
         if anws in ["N", "n"]:
             sys.exit(1)
 
-    for c in range(0, len(eps)):
-        eps[c].rename()
+    for ep in eps:
+        ep.rename()
 
 except (OSError, IOError) as err:
     exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
