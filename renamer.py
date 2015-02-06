@@ -76,7 +76,7 @@ def get_new_name(names_list, filename):
     if int(ep_num) < len(names_list) and comm(names_list[int(ep_num)]):
         ep_num = "{:0>2}-{:0>2}".format(ep_num, int(ep_num)+1)
 
-    return "{0}x{1} - {2}".format(ss_num, ep_num, ep_name)
+    return "{0:0>2}x{1:0>2} - {2}".format(ss_num, ep_num, ep_name)
 
 #
 # Main
