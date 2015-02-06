@@ -99,7 +99,6 @@ exit_code = os.EX_OK
 
 try:
     files = os.listdir(args.path)
-    files.sort(key=lambda s: s.lower())
 
     with open(args.epnames) as arq:
         content = arq.read()
@@ -108,6 +107,7 @@ try:
     names = { x:get_new_name(lines, x) for x in files }
 
     eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
+    eps.sort(key=lambda x: x.full_ename)
 
     if not args.no_confirm:
         for ep in eps:
