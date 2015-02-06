@@ -54,23 +54,6 @@ class Episode():
 #
 # Functions
 #
-def parse_cli():
-    '''
-    Set and parse command-line arguments.
-    '''
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("-v", "--version", action="version",
-        version="%(prog)s -- dev build")
-    parser.add_argument("--no-confirm", action="store_true",
-        help="Don not ask for confirmation")
-    parser.add_argument("-f", "--file", type=str, required=True,
-        help="Episodes FILE")
-    parser.add_argument("path", type=str, metavar="FOLDER",
-        help="FOLDER path")
-
-    return parser.parse_args()
-
 def get_new_name(names_list, filename):
     '''
     Parse filename to get values for episode and season numbers and
@@ -98,7 +81,18 @@ def get_new_name(names_list, filename):
 #
 # Main
 #
-args = parse_cli()
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-v", "--version", action="version",
+    version="%(prog)s -- dev build")
+parser.add_argument("--no-confirm", action="store_true",
+    help="Do not ask for confirmation")
+parser.add_argument("epnames", type=str, metavar="LIST",
+    help="Text file with the LIST of episode's names")
+parser.add_argument("path", type=str, metavar="FOLDER",
+    help="FOLDER with episodes files")
+
+args = parser.parse_args()
 
 exit_msg = "Done!"
 exit_code = os.EX_OK
@@ -107,7 +101,7 @@ try:
     files = os.listdir(args.path)
     files.sort(key=lambda s: s.lower())
 
-    with open(args.file) as arq:
+    with open(args.epnames) as arq:
         content = arq.read()
         lines = content.splitlines()
 
