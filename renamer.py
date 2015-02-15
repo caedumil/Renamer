@@ -51,32 +51,43 @@ class Episode():
 
         os.rename(self.fname_on_disk, self.ename_on_disk)
 
-#
-# Functions
-#
-def get_new_name(names_list, filename):
+
+class Filenames():
     '''
-    Parse filename to get values for episode and season numbers and
-    find the correct string to rename the file.
+    Holds a list of strings to form a new episode name.
     '''
-    SxEy = re.compile('(\.\d{4})?\.(\.?\d{1,2}\.\d{2,}|\d{3,})\.', re.I)
-    xy = re.compile('(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})')
+    def __init__(self, ep_list):
+        self.names = ep_list
+        self.length = len(ep_list)
+        self.patt1 = '(\.\d{4})?\.(\.?\d{1,2}\.\d{2,}|\d{3,})\.'
+        self.patt2 = '(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})'
 
-    comm = (lambda x: True if re.search('^#\w?', x, re.I) else False)
+    def __validate_ep(self, ep):
+        __num = ep
 
-    namestring = re.sub('[^0-9]', '.', filename)
-    pair = xy.search(SxEy.search(namestring).group(2))
+        if ep < self.length and re.search('^#\w?', self.names[ep]):
+            __num = "{:0>2}-{:0>2}".format(ep, ep+1)
 
-    if not pair:
+        return __num
+
+    def new_name(self, filename):
+        '''
+        Extract information from the filename and return a formatted string to
+        use as new filename.
+        '''
+        __namestr = re.sub('[^0-9]', '.', filename)
+        __find = re.search(self.patt1, __namestr).group(2)
+        __pair = re.search(self.patt2, __find)
+
+        if __pair:
+            __ss, __ep = __pair.group(1), int(__pair.group(2))
+            __name = self.names[__ep-1]
+
+            __ep = self.__validate_ep(__ep)
+
+            return "{0:0>2}x{1:0>2} - {2}".format(__ss, __ep, __name)
+
         return None
-
-    ss_num, ep_num = pair.groups()
-    ep_name = names_list[int(ep_num)-1]
-
-    if int(ep_num) < len(names_list) and comm(names_list[int(ep_num)]):
-        ep_num = "{:0>2}-{:0>2}".format(ep_num, int(ep_num)+1)
-
-    return "{0:0>2}x{1:0>2} - {2}".format(ss_num, ep_num, ep_name)
 
 #
 # Main
@@ -103,8 +114,9 @@ try:
     with open(args.epnames) as arq:
         content = arq.read()
         lines = content.splitlines()
+        names = Filenames(lines)
 
-    names = { x:get_new_name(lines, x) for x in files }
+    names = { x:names.new_name(x) for x in files }
 
     eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
     eps.sort(key=lambda x: x.full_ename)
