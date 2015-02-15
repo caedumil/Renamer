@@ -24,8 +24,6 @@
 
 import os
 import re
-import sys
-import argparse
 
 #
 # Classes
@@ -92,54 +90,58 @@ class Filenames():
 #
 # Main
 #
-parser = argparse.ArgumentParser()
+if __name__ == "__main__":
+    import sys
+    import argparse
 
-parser.add_argument("-v", "--version", action="version",
-    version="%(prog)s -- dev build")
-parser.add_argument("--no-confirm", action="store_true",
-    help="Do not ask for confirmation")
-parser.add_argument("epnames", type=str, metavar="LIST",
-    help="Text file with the LIST of episode's names")
-parser.add_argument("path", type=str, metavar="FOLDER",
-    help="FOLDER with episodes files")
+    parser = argparse.ArgumentParser()
 
-args = parser.parse_args()
+    parser.add_argument("-v", "--version", action="version",
+        version="%(prog)s -- dev build")
+    parser.add_argument("--no-confirm", action="store_true",
+        help="Do not ask for confirmation")
+    parser.add_argument("epnames", type=str, metavar="LIST",
+        help="Text file with the LIST of episode's names")
+    parser.add_argument("path", type=str, metavar="FOLDER",
+        help="FOLDER with episodes files")
 
-exit_msg = "Done!"
-exit_code = os.EX_OK
+    args = parser.parse_args()
 
-try:
-    files = os.listdir(args.path)
+    exit_msg = "Done!"
+    exit_code = os.EX_OK
 
-    with open(args.epnames) as arq:
-        content = arq.read()
-        lines = content.splitlines()
-        names = Filenames(lines)
+    try:
+        files = os.listdir(args.path)
 
-    names = { x:names.new_name(x) for x in files }
+        with open(args.epnames) as arq:
+            content = arq.read()
+            lines = content.splitlines()
+            names = Filenames(lines)
 
-    eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
-    eps.sort(key=lambda x: x.full_ename)
+        names = { x:names.new_name(x) for x in files }
 
-    if not args.no_confirm:
+        eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
+        eps.sort(key=lambda x: x.full_ename)
+
+        if not args.no_confirm:
+            for ep in eps:
+                print(ep)
+
+            anws = input("Apply changes? [Y/n]: ")
+            if anws in ["N", "n"]:
+                sys.exit(1)
+
         for ep in eps:
-            print(ep)
+            ep.rename()
 
-        anws = input("Apply changes? [Y/n]: ")
-        if anws in ["N", "n"]:
-            sys.exit(1)
+    except (OSError, IOError) as err:
+        exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
+        exit_code = err.errno
 
-    for ep in eps:
-        ep.rename()
+    except SystemExit as err:
+        exit_msg = "Exit\nExecution terminated by user."
+        exit_code = err.code
 
-except (OSError, IOError) as err:
-    exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
-    exit_code = err.errno
-
-except SystemExit as err:
-    exit_msg = "Exit\nExecution terminated by user."
-    exit_code = err.code
-
-finally:
-    print(exit_msg)
-    sys.exit(exit_code)
+    finally:
+        print(exit_msg)
+        sys.exit(exit_code)
