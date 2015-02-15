@@ -33,7 +33,7 @@ class Episode():
     Represents the episode file on disk.
     '''
     def __init__(self, ename, fname, fpath):
-        self.full_ename = "{}.{}".format(ename, fname.split(".")[-1])
+        self.full_ename = "{0}.{1}".format(ename, fname.split(".")[-1])
         self.filename = fname
         self.path = fpath
 
@@ -61,12 +61,13 @@ class Filenames():
         self.patt2 = '(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})'
 
     def __validate_ep(self, ep):
-        __num = ep
+        __num = ["{:0>2}".format(ep)]
 
-        if ep < self.length and re.search('^#\w?', self.names[ep]):
-            __num = "{:0>2}-{:0>2}".format(ep, ep+1)
+        while ep < self.length and re.search('^#\w?', self.names[ep]):
+            ep += 1
+            __num.append("{:0>2}".format(ep))
 
-        return __num
+        return "-".join(__num)
 
     def new_name(self, filename):
         '''
@@ -83,7 +84,7 @@ class Filenames():
 
             __ep = self.__validate_ep(__ep)
 
-            return "{0:0>2}x{1:0>2} - {2}".format(__ss, __ep, __name)
+            return "{0:0>2}x{1} - {2}".format(__ss, __ep, __name)
 
         return None
 
