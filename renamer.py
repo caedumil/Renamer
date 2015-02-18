@@ -75,8 +75,8 @@ class Filenames():
         use as new filename.
         '''
         __namestr = re.sub('[^0-9]', '.', filename)
-        __find = re.search(self.patt1, __namestr).group(2)
-        __pair = re.search(self.patt2, __find)
+        __find = re.search(self.patt1, __namestr)
+        __pair = re.search(self.patt2, __find.group(2)) if __find else None
 
         if __pair:
             __ss, __ep = __pair.group(1), int(__pair.group(2))
