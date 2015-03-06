@@ -57,8 +57,8 @@ class Filenames():
     def __init__(self, ep_list):
         self.names = ep_list
         self.length = len(ep_list)
-        self.patt1 = '(\.\d{4})?\.(\.?\d{1,2}\.\d{2,}|\d{3,})\.'
-        self.patt2 = '(0[1-9]|[1-9][0-9]?)\.?([0-9]{2,})'
+        self.patt1 = '([12]\d{3})?(\d{3,})'
+        self.patt2 = '(\d{2})(\d{2})'
 
     def __validate_ep(self, ep):
         __num = ["{:0>2}".format(ep)]
@@ -69,14 +69,26 @@ class Filenames():
 
         return "-".join(__num)
 
+    def __regex(self, filename):
+        __namestr = re.sub('[^0-9]', '', filename.rpartition('.')[0])
+        __find = re.search(self.patt1, __namestr)
+
+        if __find:
+            __find = __find.group(2)
+
+            if not re.search('264$', __find) and ( len(__find) % 2 ) != 0:
+                __find = "0" + __find
+
+            return re.search(self.patt2, __find)
+
+        return None
+
     def new_name(self, filename):
         '''
         Extract information from the filename and return a formatted string to
         use as new filename.
         '''
-        __namestr = re.sub('[^0-9]', '.', filename)
-        __find = re.search(self.patt1, __namestr)
-        __pair = re.search(self.patt2, __find.group(2)) if __find else None
+        __pair = self.__regex(filename)
 
         if __pair:
             __ss, __ep = __pair.group(1), int(__pair.group(2))
