@@ -155,6 +155,11 @@ if __name__ == "__main__":
         exit_msg = "Exit\nExecution terminated by user."
         exit_code = err.code
 
+    except Exception as err:
+        print(type(err))
+        print(err)
+        exit_msg = ""
+
     finally:
         print(exit_msg)
         sys.exit(exit_code)
