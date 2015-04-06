@@ -3,13 +3,14 @@
 Simple script written in python3 to rename downloaded episodes, based on the
 season number, episode number and episode name.
 
+By default it will look online for the information.
+
 ## How to use?
 
-    renamer.py [-h] LIST FOLDER
+    renamer.py [-h] [-f FILE] FOLDER
 
 * `-h` help message
-* Text file with the LIST of episodes names
-* FOLDER path
+* `-f`, `--file` Text FILE with the list of episode names
+* episodes FOLDER
 
-The LIST is a plain text file with one episode name per line.  
-In the case of a 00 episode, the name must be the last one.
+The FILE is a plain text file with one episode name per line.
