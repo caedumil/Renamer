@@ -24,81 +24,122 @@
 
 import os
 import re
+import urllib.request
+import xml.etree.ElementTree as etree
 
 #
 # Classes
 #
-class Episode():
+class Show():
     '''
-    Represents the episode file on disk.
     '''
-    def __init__(self, ename, fname, fpath):
-        self.full_ename = "{0}.{1}".format(ename, fname.split(".")[-1])
-        self.filename = fname
-        self.path = fpath
+    def __init__(self, showname, season=None):
+        self.showname = showname.replace(".", "_")
+        self.showid = self.__getid()
+        self.xmllist = self.__geteplist()
 
-    def __str__(self):
-        return ">>> {0}\n<<< {1}".format(self.filename, self.full_ename)
+        if season:
+            self.setseason(season)
+
+    def __getid(self):
+        url= "http://services.tvrage.com/feeds/search.php?show="
+        down = urllib.request.urlopen(url + self.showname)
+        data = down.read()
+
+        root = etree.fromstring(data.decode("UTF-8"))
+        showid = root.find("show/showid")
+
+        return showid.text
+
+    def __geteplist(self):
+        url = "http://services.tvrage.com/feeds/episode_list.php?sid="
+        down = urllib.request.urlopen(url + self.showid)
+        data = down.read()
+
+        root = etree.fromstring(data.decode("UTF-8"))
+        xml = root.find("Episodelist")
+
+        return xml
+
+    def setseason(self, season):
+        '''
+        '''
+        item = "Season[@no='{0}']/episode/".format(season.lstrip("0"))
+
+        eps = [ x.text for x in self.xmllist.findall(item + "seasonnum") ]
+        titles = [ x.text for x in self.xmllist.findall(item + "title") ]
+
+        self.ep_title = { x:y for (x, y) in zip(eps, titles) }
+
+    def gettitle(self, ep):
+        '''
+        '''
+        return self.ep_title[ep]
+
+class Text():
+    '''
+    '''
+    def __init__(self, lines):
+        self.lines = self.__dictlines(lines)
+
+    def __dictlines(self, lines):
+        a = range(1, len(lines)+1)
+        b = { "{:0>2}".format(x):y for (x, y) in zip(a, lines) }
+
+        return b
+
+    def gettitle(self, ep):
+        '''
+        '''
+        return self.lines[ep]
+
+class Folder():
+    '''
+    '''
+    def __init__(self, path, filename):
+        self.path = path
+        self.filename = filename
+        self.show = self.__getname()
+
+        if self.show:
+            self.season, self.episode = self.__getnumbers()
+            self.epname = "{0}x{1}".format(self.season, self.episode)
+
+    def __getname(self):
+        name = re.search("([a-zA-Z0-9.]+?)\.S?[0-9]{2}", self.filename)
+
+        return name.group(1) if name else None
+
+    def __getnumbers(self):
+        name = re.sub(self.show, "", self.filename)
+
+        tail = re.search("\d\.(.*$)", name).group(1)
+        name = re.sub(tail, "", name)
+        name = re.sub("[^0-9]", "", name)
+
+        if (len(name) % 2) != 0:
+            name = "0" + name
+
+        nums = re.search("(\d{2})(\d{2})", name)
+
+        if not nums:
+            return None, None
+
+        return nums.group(1), nums.group(2)
+
+    def setepname(self, name):
+        '''
+        '''
+        ext = self.filename.split(".")[-1]
+        self.epname = "{0} - {1}.{2}".format(self.epname, name, ext)
 
     def rename(self):
         '''
-        Rename the file.
         '''
-        self.fname_on_disk = os.path.join(self.path, self.filename)
-        self.ename_on_disk = os.path.join(self.path, self.full_ename)
+        fname = os.path.join(self.path, self.filename)
+        ename = os.path.join(self.path, self.epname)
 
-        os.rename(self.fname_on_disk, self.ename_on_disk)
-
-
-class Filenames():
-    '''
-    Holds a list of strings to form a new episode name.
-    '''
-    def __init__(self, ep_list):
-        self.names = ep_list
-        self.length = len(ep_list)
-        self.patt1 = '([12]\d{3})?(\d{3,})'
-        self.patt2 = '(\d{2})(\d{2})'
-
-    def __validate_ep(self, ep):
-        __num = ["{:0>2}".format(ep)]
-
-        while ep < self.length and re.search('^#\w?', self.names[ep]):
-            ep += 1
-            __num.append("{:0>2}".format(ep))
-
-        return "-".join(__num)
-
-    def __regex(self, filename):
-        __namestr = re.sub('[^0-9]', '', filename.rpartition('.')[0])
-        __find = re.search(self.patt1, __namestr)
-
-        if __find:
-            __find = __find.group(2)
-
-            if not re.search('264$', __find) and ( len(__find) % 2 ) != 0:
-                __find = "0" + __find
-
-            return re.search(self.patt2, __find)
-
-        return None
-
-    def new_name(self, filename):
-        '''
-        Extract information from the filename and return a formatted string to
-        use as new filename.
-        '''
-        __pair = self.__regex(filename)
-
-        if __pair:
-            __ss, __ep = __pair.group(1), int(__pair.group(2))
-            __name = self.names[__ep-1]
-
-            __ep = self.__validate_ep(__ep)
-
-            return "{0:0>2}x{1} - {2}".format(__ss, __ep, __name)
-
-        return None
+        os.rename(fname, ename)
 
 #
 # Main
@@ -110,11 +151,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-v", "--version", action="version",
-        version="%(prog)s -- dev build")
+        version="%(prog)s -- 0.10-dev")
     parser.add_argument("--no-confirm", action="store_true",
         help="Do not ask for confirmation")
-    parser.add_argument("epnames", type=str, metavar="LIST",
-        help="Text file with the LIST of episode's names")
+    parser.add_argument("-f", "--file", type=str, dest="epfile", metavar="FILE",
+        help="Text FILE with the list of episodes")
     parser.add_argument("path", type=str, metavar="FOLDER",
         help="FOLDER with episodes files")
 
@@ -124,30 +165,40 @@ if __name__ == "__main__":
     exit_code = os.EX_OK
 
     try:
-        files = os.listdir(args.path)
+        files = [ Folder(args.path, x) for x in os.listdir(args.path) ]
+        files = [ x for x in files if x.show ]
 
-        with open(args.epnames) as arq:
-            content = arq.read()
-            lines = content.splitlines()
-            names = Filenames(lines)
+        uniq = set( (x.show, x.season) for x in files )
+        names = {}
 
-        names = { x:names.new_name(x) for x in files }
+        if args.epfile:
+            with open(args.epfile) as arq:
+                content = arq.read()
+                lines = content.splitlines()
+                names[uniq[0]] = Text(lines)
 
-        eps = [ Episode(y, x, args.path) for x,y in names.items() if y ]
-        eps.sort(key=lambda x: x.full_ename)
+        else:
+            for show, season in uniq:
+                print("Getting information for: {0}".format(show))
+                names[show] = Show(show, season)
+
+        for f in files:
+            f.setepname(names[f.show].gettitle(f.episode))
+
+        files.sort(key=lambda x: x.epname)
 
         if not args.no_confirm:
-            for ep in eps:
-                print(ep)
+            for ep in files:
+                print("<<< {0}\n>>> {1}".format(ep.filename, ep.epname))
 
             anws = input("Apply changes? [Y/n]: ")
             if anws in ["N", "n"]:
                 sys.exit(1)
 
-        for ep in eps:
+        for ep in files:
             ep.rename()
 
-    except (OSError, IOError) as err:
+    except (OSError) as err:
         exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
         exit_code = err.errno
 
