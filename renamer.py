@@ -144,6 +144,43 @@ class Folder():
 #
 # Main
 #
+def __main():
+    files = [ Folder(args.path, x) for x in os.listdir(args.path) ]
+    files = [ x for x in files if x.show ]
+
+    uniq = set( (x.show, x.season) for x in files )
+    names = {}
+
+    if args.epfile:
+        with open(args.epfile) as arq:
+            content = arq.read()
+            lines = content.splitlines()
+            names[uniq[0]] = Text(lines)
+
+    else:
+        for show, season in uniq:
+            print("Getting information for: {0}".format(show))
+            names[show] = Show(show, season)
+
+    for f in files:
+        f.setepname(names[f.show].gettitle(f.episode))
+
+    files.sort(key=lambda x: x.epname)
+
+    if not args.no_confirm:
+        for ep in files:
+            print("<<< {0}\n>>> {1}".format(ep.filename, ep.epname))
+
+        anws = input("Apply changes? [Y/n]: ")
+        if anws in ["N", "n"]:
+            sys.exit(1)
+
+    for ep in files:
+        ep.rename()
+
+#
+# Execute code
+#
 if __name__ == "__main__":
     import sys
     import argparse
@@ -165,38 +202,7 @@ if __name__ == "__main__":
     exit_code = os.EX_OK
 
     try:
-        files = [ Folder(args.path, x) for x in os.listdir(args.path) ]
-        files = [ x for x in files if x.show ]
-
-        uniq = set( (x.show, x.season) for x in files )
-        names = {}
-
-        if args.epfile:
-            with open(args.epfile) as arq:
-                content = arq.read()
-                lines = content.splitlines()
-                names[uniq[0]] = Text(lines)
-
-        else:
-            for show, season in uniq:
-                print("Getting information for: {0}".format(show))
-                names[show] = Show(show, season)
-
-        for f in files:
-            f.setepname(names[f.show].gettitle(f.episode))
-
-        files.sort(key=lambda x: x.epname)
-
-        if not args.no_confirm:
-            for ep in files:
-                print("<<< {0}\n>>> {1}".format(ep.filename, ep.epname))
-
-            anws = input("Apply changes? [Y/n]: ")
-            if anws in ["N", "n"]:
-                sys.exit(1)
-
-        for ep in files:
-            ep.rename()
+        __main()
 
     except (OSError) as err:
         exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
