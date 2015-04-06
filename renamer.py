@@ -32,6 +32,10 @@ import xml.etree.ElementTree as etree
 #
 class Show():
     '''
+    TV show information.
+
+    Fetch data online, using TVRage API.
+    Keep the episode list of specified TV show and season.
     '''
     def __init__(self, showname, season=None):
         self.showname = showname.replace(".", "_")
@@ -63,6 +67,7 @@ class Show():
 
     def setseason(self, season):
         '''
+        Set the season number to store episodes list.
         '''
         item = "Season[@no='{0}']/episode/".format(season.lstrip("0"))
 
@@ -73,11 +78,16 @@ class Show():
 
     def gettitle(self, ep):
         '''
+        Return the ep title of the show.
         '''
         return self.ep_title[ep]
 
 class Text():
     '''
+    List of episode names.
+
+    Information read from a text file.
+    File consist in one episode name per line.
     '''
     def __init__(self, lines):
         self.lines = self.__dictlines(lines)
@@ -90,11 +100,20 @@ class Text():
 
     def gettitle(self, ep):
         '''
+        Return the ep title of the show.
         '''
         return self.lines[ep]
 
 class Folder():
     '''
+    File information.
+
+    Parse the filename to get:
+        - show name
+        - season number
+        - episode number
+
+    If fails to find, value is set to None.
     '''
     def __init__(self, path, filename):
         self.path = path
@@ -129,12 +148,14 @@ class Folder():
 
     def setepname(self, name):
         '''
+        Use name to set the new filename.
         '''
         ext = self.filename.split(".")[-1]
         self.epname = "{0} - {1}.{2}".format(self.epname, name, ext)
 
     def rename(self):
         '''
+        Rename the file on disk.
         '''
         fname = os.path.join(self.path, self.filename)
         ename = os.path.join(self.path, self.epname)
