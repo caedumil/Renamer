@@ -225,7 +225,7 @@ if __name__ == "__main__":
     try:
         __main()
 
-    except (OSError) as err:
+    except OSError as err:
         exit_msg = "ERROR!\n{0} - {1}.".format(err.filename, err.strerror)
         exit_code = err.errno
 
@@ -234,9 +234,7 @@ if __name__ == "__main__":
         exit_code = err.code
 
     except Exception as err:
-        print(type(err))
-        print(err)
-        exit_msg = ""
+        exit_msg = "{0}\n{1}".format(type(err), err)
 
     finally:
         print(exit_msg)
