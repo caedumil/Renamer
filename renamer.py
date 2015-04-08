@@ -125,21 +125,24 @@ class Folder():
             self.epname = "{0}x{1}".format(self.season, self.episode)
 
     def __getname(self):
-        name = re.search("([a-zA-Z0-9.]+?)\.S?[0-9]{2}", self.filename)
+        regex = re.compile("([\w. -]+?([. ][12]\d{3})?)[. ](S\d{2}|\d{3})")
+        name = regex.search(self.filename)
 
         return name.group(1) if name else None
 
     def __getnumbers(self):
-        name = re.sub(self.show, "", self.filename)
+        rtail = re.compile("(\d)[. ].*")
+        rnumbers = re.compile("(\d{2})(\d{2})")
 
-        tail = re.search("\d\.(.*$)", name).group(1)
-        name = re.sub(tail, "", name)
+        name = re.sub(self.show, "", self.filename, flags=re.I)
+
+        name = rtail.sub(lambda x: x.group(1), name)
         name = re.sub("[^0-9]", "", name)
 
         if (len(name) % 2) != 0:
             name = "0" + name
 
-        nums = re.search("(\d{2})(\d{2})", name)
+        nums = rnumbers.search(name)
 
         if not nums:
             return None, None
