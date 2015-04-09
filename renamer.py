@@ -24,6 +24,7 @@
 
 import os
 import re
+import difflib
 import urllib.request
 import xml.etree.ElementTree as etree
 
@@ -38,12 +39,17 @@ class Show():
     Keep the episode list of specified TV show and season.
     '''
     def __init__(self, showname, season=None):
-        self.showname = showname.replace(".", "_")
+        self.showname = showname
         self.showid = self.__getid()
         self.xmllist = self.__geteplist()
 
         if season:
             self.setseason(season)
+
+    def __fuzzymatch(self, names):
+        match = difflib.get_close_matches(self.showname, names)
+
+        return match[0]
 
     def __getid(self):
         url= "http://services.tvrage.com/feeds/search.php?show="
@@ -51,9 +57,13 @@ class Show():
         data = down.read()
 
         root = etree.fromstring(data.decode("UTF-8"))
-        showid = root.find("show/showid")
 
-        return showid.text
+        show = zip(root.findall("show/name"), root.findall("show/showid"))
+        show = { x.text.lower():y.text for x, y in show }
+
+        match = self.__fuzzymatch(show.keys())
+
+        return show[match]
 
     def __geteplist(self):
         url = "http://services.tvrage.com/feeds/episode_list.php?sid="
