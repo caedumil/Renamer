@@ -128,7 +128,7 @@ class Folder():
         regex = re.compile("([\w. -]+?([. ][12]\d{3})?)[. ](S\d{2}|\d{3})")
         name = regex.search(self.filename)
 
-        return name.group(1) if name else None
+        return name.group(1).lower() if name else None
 
     def __getnumbers(self):
         rtail = re.compile("(\d)[. ].*")
