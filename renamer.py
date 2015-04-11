@@ -179,7 +179,10 @@ class Folder():
 # Main
 #
 def __main():
-    files = [ Folder(args.path, x) for x in os.listdir(args.path) ]
+    files = []
+
+    for path in [ x for x in args.path if os.path.isdir(x) ]:
+        files += [ Folder(path, x) for x in os.listdir(path) ]
     files = [ x for x in files if x.show ]
 
     uniq = set( (x.show, x.season) for x in files )
@@ -193,7 +196,7 @@ def __main():
 
     else:
         for show, season in uniq:
-            print("Getting information for: {0}".format(show))
+            print("Fetching episodes for: {0}.{1}".format(show.title(), season))
             names[show] = Show(show, season)
 
     for f in files:
@@ -227,7 +230,7 @@ if __name__ == "__main__":
         help="Do not ask for confirmation")
     parser.add_argument("-f", "--file", type=str, dest="epfile", metavar="FILE",
         help="Text FILE with the list of episodes")
-    parser.add_argument("path", type=str, metavar="FOLDER",
+    parser.add_argument("path", type=str, metavar="FOLDER", nargs="+",
         help="FOLDER with episodes files")
 
     args = parser.parse_args()
