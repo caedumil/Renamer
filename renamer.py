@@ -41,7 +41,7 @@ class Show():
     def __init__(self, showname, season=None):
         self.showname = showname
         self.showid = self.__getid()
-        self.xmllist = self.__geteplist()
+        self.__geteplist()
 
         if season:
             self.setseason(season)
@@ -71,26 +71,27 @@ class Show():
         data = down.read()
 
         root = etree.fromstring(data.decode("UTF-8"))
-        xml = root.find("Episodelist")
+        self.__xml = root.find("Episodelist")
 
-        return xml
+    def __readxml(self, season):
+        item = "Season[@no='{0}']/episode/".format(season.lstrip("0"))
+
+        eps = [ x.text for x in self.__xml.findall(item + "seasonnum") ]
+        titles = [ x.text for x in self.__xml.findall(item + "title") ]
+
+        return { x:y for (x, y) in zip(eps, titles) }
 
     def setseason(self, season):
         '''
         Set the season number to store episodes list.
         '''
-        item = "Season[@no='{0}']/episode/".format(season.lstrip("0"))
+        self.ep_title = { x:self.__readxml(x) for x in season }
 
-        eps = [ x.text for x in self.xmllist.findall(item + "seasonnum") ]
-        titles = [ x.text for x in self.xmllist.findall(item + "title") ]
-
-        self.ep_title = { x:y for (x, y) in zip(eps, titles) }
-
-    def gettitle(self, ep):
+    def gettitle(self, season, ep):
         '''
         Return the ep title of the show.
         '''
-        return self.ep_title[ep]
+        return self.ep_title[season][ep]
 
 class Text():
     '''
@@ -180,12 +181,16 @@ class Folder():
 #
 def __main():
     files = []
+    uniq = []
 
     for path in [ x for x in args.path if os.path.isdir(x) ]:
         files += [ Folder(path, x) for x in os.listdir(path) ]
+
     files = [ x for x in files if x.show ]
 
-    uniq = set( (x.show, x.season) for x in files )
+    for show in set( x.show for x in files ):
+        uniq.append( (show, set( x.season for x in files if show == x.show )) )
+
     names = {}
 
     if args.epfile:
@@ -195,12 +200,12 @@ def __main():
             names[uniq[0]] = Text(lines)
 
     else:
-        for show, season in uniq:
-            print("Fetching episodes for: {0}.{1}".format(show.title(), season))
-            names[show] = Show(show, season)
+        for show, seasons in uniq:
+            print("Fetching episodes for: {0}".format(show.title()))
+            names[show] = Show(show, seasons)
 
     for f in files:
-        f.setepname(names[f.show].gettitle(f.episode))
+        f.setepname(names[f.show].gettitle(f.season, f.episode))
 
     files.sort(key=lambda x: x.epname)
 
