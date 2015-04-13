@@ -191,21 +191,24 @@ def __main():
     for show in set( x.show for x in files ):
         uniq.append( (show, set( x.season for x in files if show == x.show )) )
 
-    names = {}
-
     if args.epfile:
         with open(args.epfile) as arq:
             content = arq.read()
             lines = content.splitlines()
-            names[uniq[0]] = Text(lines)
+
+        names = Text(lines)
+
+        for f in files:
+            f.setepname(names.gettitle(f.episode))
 
     else:
+        names = {}
         for show, seasons in uniq:
             print("Fetching episodes for: {0}".format(show.title()))
             names[show] = Show(show, seasons)
 
-    for f in files:
-        f.setepname(names[f.show].gettitle(f.season, f.episode))
+        for f in files:
+            f.setepname(names[f.show].gettitle(f.season, f.episode))
 
     files.sort(key=lambda x: x.epname)
 
