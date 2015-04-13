@@ -136,7 +136,7 @@ class Folder():
             self.epname = "{0}x{1}".format(self.season, self.episode)
 
     def __getname(self):
-        regex = re.compile("([\w. -]+?([. ][12]\d{3})?)[. ](S\d{2}|\d{3})")
+        regex = re.compile("([\w. -]+?([. ][12]\d{3})?)[. ]([Ss]\d{2}|\d{3})")
         name = regex.search(self.filename)
 
         return name.group(1).lower() if name else None
