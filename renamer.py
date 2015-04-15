@@ -99,15 +99,18 @@ class Text():
 
     Information read from a text file.
     File consist in one episode name per line.
+
+    Lines starting with a '#' are considered comments and ignored.
     '''
     def __init__(self, lines):
         self.lines = self.__dictlines(lines)
 
     def __dictlines(self, lines):
-        a = range(1, len(lines)+1)
-        b = { "{:0>2}".format(x):y for (x, y) in zip(a, lines) }
+        regex = (lambda x: False if re.search("^#", x) else True)
 
-        return b
+        nums = range(1, len(lines)+1)
+
+        return { "{:0>2}".format(x):y for (x, y) in zip(a, lines) if regex(y) }
 
     def gettitle(self, ep):
         '''
