@@ -93,31 +93,6 @@ class Show():
         '''
         return self.ep_title[season][ep]
 
-class Text():
-    '''
-    List of episode names.
-
-    Information read from a text file.
-    File consist in one episode name per line.
-
-    Lines starting with a '#' are considered comments and ignored.
-    '''
-    def __init__(self, lines):
-        self.lines = self.__dictlines(lines)
-
-    def __dictlines(self, lines):
-        regex = (lambda x: False if re.search("^#", x) else True)
-
-        nums = range(1, len(lines)+1)
-
-        return { "{:0>2}".format(x):y for (x, y) in zip(a, lines) if regex(y) }
-
-    def gettitle(self, ep):
-        '''
-        Return the ep title of the show.
-        '''
-        return self.lines[ep]
-
 class Folder():
     '''
     File information.
@@ -195,24 +170,13 @@ def __main():
     for show in set( x.show for x in files ):
         uniq.append( (show, set( x.season for x in files if show == x.show )) )
 
-    if args.epfile:
-        with open(args.epfile) as arq:
-            content = arq.read()
-            lines = content.splitlines()
+    names = {}
+    for show, seasons in uniq:
+        print("Fetching episodes for: {0}".format(show.title()))
+        names[show] = Show(show, seasons)
 
-        names = Text(lines)
-
-        for f in files:
-            f.setepname(names.gettitle(f.episode))
-
-    else:
-        names = {}
-        for show, seasons in uniq:
-            print("Fetching episodes for: {0}".format(show.title()))
-            names[show] = Show(show, seasons)
-
-        for f in files:
-            f.setepname(names[f.show].gettitle(f.season, f.episode))
+    for f in files:
+        f.setepname(names[f.show].gettitle(f.season, f.episode))
 
     files.sort(key=lambda x: x.epname)
 
@@ -240,8 +204,6 @@ if __name__ == "__main__":
         version="%(prog)s -- 0.10-dev")
     parser.add_argument("--no-confirm", action="store_true",
         help="Do not ask for confirmation")
-    parser.add_argument("-f", "--file", type=str, dest="epfile", metavar="FILE",
-        help="Text FILE with the list of episodes")
     parser.add_argument("path", type=str, metavar="FOLDER", nargs="+",
         help="FOLDER with episodes files")
 

@@ -7,10 +7,9 @@ By default it will look online for the information.
 
 ## How to use?
 
-    renamer.py [-h] [-f FILE] FOLDER
+    renamer.py [-h] FOLDER
 
 * `-h` help message
-* `-f`, `--file` Text FILE with the list of episode names
 * episodes FOLDER
 
 The FILE is a plain text file with one episode name per line.
