@@ -99,15 +99,18 @@ class Text():
 
     Information read from a text file.
     File consist in one episode name per line.
+
+    Lines starting with a '#' are considered comments and ignored.
     '''
     def __init__(self, lines):
         self.lines = self.__dictlines(lines)
 
     def __dictlines(self, lines):
-        a = range(1, len(lines)+1)
-        b = { "{:0>2}".format(x):y for (x, y) in zip(a, lines) }
+        regex = (lambda x: False if re.search("^#", x) else True)
 
-        return b
+        nums = range(1, len(lines)+1)
+
+        return { "{:0>2}".format(x):y for (x, y) in zip(a, lines) if regex(y) }
 
     def gettitle(self, ep):
         '''
@@ -192,21 +195,24 @@ def __main():
     for show in set( x.show for x in files ):
         uniq.append( (show, set( x.season for x in files if show == x.show )) )
 
-    names = {}
-
     if args.epfile:
         with open(args.epfile) as arq:
             content = arq.read()
             lines = content.splitlines()
-            names[uniq[0]] = Text(lines)
+
+        names = Text(lines)
+
+        for f in files:
+            f.setepname(names.gettitle(f.episode))
 
     else:
+        names = {}
         for show, seasons in uniq:
             print("Fetching episodes for: {0}".format(show.title()))
             names[show] = Show(show, seasons)
 
-    for f in files:
-        f.setepname(names[f.show].gettitle(f.season, f.episode))
+        for f in files:
+            f.setepname(names[f.show].gettitle(f.season, f.episode))
 
     files.sort(key=lambda x: x.epname)
 
