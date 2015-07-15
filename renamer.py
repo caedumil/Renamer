@@ -24,6 +24,7 @@
 
 import os
 import re
+import shutil
 import difflib
 import urllib.request
 import xml.etree.ElementTree as etree
@@ -104,8 +105,9 @@ class Folder():
 
     If fails to find, value is set to None.
     '''
-    def __init__(self, path, filename):
+    def __init__(self, path, target, filename):
         self.path = path
+        self.target = target if target else path
         self.filename = filename
         self.show = self.__getname()
 
@@ -151,9 +153,9 @@ class Folder():
         Rename the file on disk.
         '''
         fname = os.path.join(self.path, self.filename)
-        ename = os.path.join(self.path, self.epname)
+        ename = os.path.join(self.target, self.epname)
 
-        os.rename(fname, ename)
+        shutil.move(fname, ename)
 
 #
 # Main
@@ -164,14 +166,14 @@ def __main():
 
     for path in args.path:
         if os.path.isdir(path):
-            files += [ Folder(path, x) for x in os.listdir(path) ]
+            files += [ Folder(path, args.target, x) for x in os.listdir(path) ]
 
         else:
             pth, ep = os.path.split(path)
             if not pth:
                 pth = os.path.curdir
 
-            files += [ Folder(pth, ep) ]
+            files += [ Folder(pth, args.target, ep) ]
 
     files = [ x for x in files if x.show ]
 
@@ -212,6 +214,8 @@ if __name__ == "__main__":
         version="%(prog)s -- 0.10-dev")
     parser.add_argument("--no-confirm", action="store_true",
         help="Do not ask for confirmation")
+    parser.add_argument("-t", "--target", type=str, default=None,
+        help="Destination folder")
     parser.add_argument("path", type=str, metavar="FOLDER", nargs="+",
         help="FOLDER with episodes files")
 
