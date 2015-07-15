@@ -162,8 +162,16 @@ def __main():
     files = []
     uniq = []
 
-    for path in [ x for x in args.path if os.path.isdir(x) ]:
-        files += [ Folder(path, x) for x in os.listdir(path) ]
+    for path in args.path:
+        if os.path.isdir(path):
+            files += [ Folder(path, x) for x in os.listdir(path) ]
+
+        else:
+            pth, ep = os.path.split(path)
+            if not pth:
+                pth = os.path.curdir
+
+            files += [ Folder(pth, ep) ]
 
     files = [ x for x in files if x.show ]
 
