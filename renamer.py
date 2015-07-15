@@ -144,9 +144,9 @@ class Folder():
         '''
         Use name to set the new filename.
         '''
-        ext = self.filename.split(".")[-1]
+        _, ext = os.path.splitext(self.filename)
         proper = name.replace("/", "-")
-        self.epname = "{0} - {1}.{2}".format(self.epname, proper, ext)
+        self.epname = "{0} - {1}{2}".format(self.epname, proper, ext)
 
     def rename(self):
         '''
