@@ -148,6 +148,9 @@ class Folder():
         proper = name.replace("/", "-")
         self.epname = "{0} - {1}{2}".format(self.epname, proper, ext)
 
+    def addshowname(self):
+        self.epname = "{0} - {1}".format(self.show, self.epname)
+
     def rename(self):
         '''
         Rename the file on disk.
@@ -188,6 +191,10 @@ def __main():
     for f in files:
         f.setepname(names[f.show].gettitle(f.season, f.episode))
 
+    if args.show_name:
+        for f in files:
+            f.addshowname()
+
     files.sort(key=lambda x: x.epname)
 
     if not args.no_confirm:
@@ -214,6 +221,8 @@ if __name__ == "__main__":
         version="%(prog)s -- 0.10-dev")
     parser.add_argument("--no-confirm", action="store_true",
         help="Do not ask for confirmation")
+    parser.add_argument("--show-name", action="store_true",
+        help="Prepend the show name to the filename")
     parser.add_argument("-t", "--target", type=str, default=None,
         help="Destination folder")
     parser.add_argument("path", type=str, metavar="FOLDER", nargs="+",
