@@ -41,18 +41,18 @@ class Show():
     '''
     def __init__(self, showname, season=None):
         self.showname = showname
-        self.showid = self.__getid()
-        self.__geteplist()
+        self.showid = self.__getID()
+        self.__getEpList()
 
         if season:
-            self.setseason(season)
+            self.setSeason(season)
 
-    def __fuzzymatch(self, names):
+    def __fuzzyMatch(self, names):
         match = difflib.get_close_matches(self.showname, names)
 
         return match[0]
 
-    def __getid(self):
+    def __getID(self):
         url= "http://services.tvrage.com/feeds/search.php?show="
         down = urllib.request.urlopen(url + self.showname)
         data = down.read()
@@ -62,11 +62,11 @@ class Show():
         show = zip(root.findall("show/name"), root.findall("show/showid"))
         show = { x.text.lower():y.text for x, y in show }
 
-        match = self.__fuzzymatch(show.keys())
+        match = self.__fuzzyMatch(show.keys())
 
         return show[match]
 
-    def __geteplist(self):
+    def __getEpList(self):
         url = "http://services.tvrage.com/feeds/episode_list.php?sid="
         down = urllib.request.urlopen(url + self.showid)
         data = down.read()
@@ -74,7 +74,7 @@ class Show():
         root = etree.fromstring(data.decode("UTF-8"))
         self.__xml = root.find("Episodelist")
 
-    def __readxml(self, season):
+    def __readXML(self, season):
         item = "Season[@no='{0}']/episode/".format(season.lstrip("0"))
 
         eps = [ x.text for x in self.__xml.findall(item + "seasonnum") ]
@@ -82,13 +82,13 @@ class Show():
 
         return { x:y for (x, y) in zip(eps, titles) }
 
-    def setseason(self, season):
+    def setSeason(self, season):
         '''
         Set the season number to store episodes list.
         '''
-        self.ep_title = { x:self.__readxml(x) for x in season }
+        self.ep_title = { x:self.__readXML(x) for x in season }
 
-    def gettitle(self, season, ep):
+    def getTitle(self, season, ep):
         '''
         Return the ep title of the show.
         '''
@@ -109,19 +109,19 @@ class Folder():
         self.path = path
         self.target = target if target else path
         self.filename = filename
-        self.show = self.__getname()
+        self.show = self.__getName()
 
         if self.show:
-            self.season, self.episode = self.__getnumbers()
+            self.season, self.episode = self.__getNumbers()
             self.epname = "{0}x{1}".format(self.season, self.episode)
 
-    def __getname(self):
+    def __getName(self):
         regex = re.compile("([\w. -]+?([. ][12]\d{3})?)[. ]([Ss]\d{2}|\d{3})")
         name = regex.search(self.filename)
 
         return name.group(1).lower() if name else None
 
-    def __getnumbers(self):
+    def __getNumbers(self):
         rtail = re.compile("(\d)[. ].*")
         rnumbers = re.compile("(\d{2})(\d{2})")
 
@@ -140,7 +140,7 @@ class Folder():
 
         return nums.group(1), nums.group(2)
 
-    def setepname(self, name):
+    def setEpName(self, name):
         '''
         Use name to set the new filename.
         '''
@@ -148,7 +148,7 @@ class Folder():
         proper = name.replace("/", "-")
         self.epname = "{0} - {1}{2}".format(self.epname, proper, ext)
 
-    def addshowname(self):
+    def addShowName(self):
         self.epname = "{0} - {1}".format(self.show, self.epname)
 
     def rename(self):
@@ -189,11 +189,11 @@ def __main():
         names[show] = Show(show, seasons)
 
     for f in files:
-        f.setepname(names[f.show].gettitle(f.season, f.episode))
+        f.setEpName(names[f.show].getTitle(f.season, f.episode))
 
     if args.show_name:
         for f in files:
-            f.addshowname()
+            f.addShowName()
 
     files.sort(key=lambda x: x.epname)
 
