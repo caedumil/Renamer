@@ -62,7 +62,7 @@ class Folder():
                 self.properShow, self.season, self.episode, proper, ext
             ) \
             if showName else \
-            "{0}x{1} - {3}{4}".format(
+            "{0}x{1} - {2}{3}".format(
                 self.season, self.episode, proper, ext
             )
 

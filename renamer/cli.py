@@ -21,7 +21,7 @@ def main():
     )
     parser.add_argument(
         "--no-showname", action="store_true",
-        help="Prepend the show name to the filename"
+        help="Remove the show name from the filename"
     )
     parser.add_argument(
         "path", type=str, metavar="FILE", nargs="+",
