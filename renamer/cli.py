@@ -56,7 +56,12 @@ def main():
             shows[ep.show].getTitle(ep.season, ep.episode), (not args.no_showname)
         )
 
-    files.sort(key=lambda x: x.epname)
+    if files:
+        files.sort(key=lambda x: x.epname)
+
+    else:
+        print("Nothing to do.")
+        sys.exit()
 
     if not args.no_confirm:
         for ep in files:
