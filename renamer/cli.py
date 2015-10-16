@@ -17,7 +17,8 @@ def main():
         "-v", "--version", action="version", version="%(prog)s -- 0.0.1.dev1"
     )
     parser.add_argument(
-        "--no-confirm", action="store_true", help="Do not ask for confirmation"
+        "-y", "--no-confirm", action="store_true",
+        help="Do not ask for confirmation"
     )
     parser.add_argument(
         "--no-showname", action="store_true",
