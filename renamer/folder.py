@@ -22,6 +22,10 @@ class Folder():
     def __init__(self, filename):
         self.path = os.path.dirname(filename)
         self.filename = os.path.basename(filename)
+        self.show = None
+        self.properShow = None
+        self.season = None
+        self.episode = None
         self._parseName()
 
     def _formatName(self, show):
@@ -31,24 +35,31 @@ class Folder():
         return numbers.sub("", dots.sub("+", show)).strip("+")
 
     def _parseName(self):
-        regex = re.compile("s(\d{2})e(\d{2})", re.I)
-        show = season = episode = None
+        regex1 = re.compile("s(\d{2})e(\d{2})", re.I)
+        regex2 = re.compile("(\d{2})(\d{2,)")
+        regex3 = re.compile("(\d)(\d{2,})")
 
-        splitName = regex.split(self.filename)
+        if regex1.search(self.filename):
+            regex = regex1
 
-        if len(splitName) >= 3:
-            show, season, episode = splitName[:3]
+        elif regex2.search(self.filename):
+            regex = regex2
 
-        if show:
-            self.show = self._formatName(show)
-            self.properShow = self.show.replace("+", " ")
+        elif regex3.search(self.filename):
+            regex = regex3
 
         else:
-            self.show = None
-            self.properShow = None
+            return
 
-        self.season = season
+        splitName = regex.split(self.filename)
+        show, season, episode = splitName[:3]
+
+        self.show = self._formatName(show)
+        self.properShow = self.show.replace("+", " ")
+        self.season = "{:0>2}".format(season)
         self.episode = episode
+
+        return
 
     def setEpName(self, name, showName=True):
         '''
