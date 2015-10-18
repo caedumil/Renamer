@@ -42,6 +42,10 @@ def main():
 
     files = [ x for x in map( (lambda x: folder.Folder(x)), fileList ) if x.show ]
 
+    if not files:
+        print("Nothing to do...")
+        sys.exit(1)
+
     shows = {}
     for serie, proper in set( (x.show, x.properShow) for x in files ):
         try:
@@ -60,12 +64,7 @@ def main():
         for ep in files:
             ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
 
-    if files:
-        files.sort(key=lambda x: x.epname)
-
-    else:
-        print("Nothing to do.")
-        sys.exit()
+    files.sort(key=lambda x: x.epname)
 
     if not args.no_confirm:
         for ep in files:
