@@ -21,8 +21,8 @@ def main():
         help="Do not ask for confirmation"
     )
     parser.add_argument(
-        "--no-showname", action="store_true",
-        help="Remove the show name from the filename"
+        "-c", "--complete", action="store_true",
+        help="Add the serie name to the final filename"
     )
     parser.add_argument(
         "path", type=str, metavar="FILE", nargs="+",
@@ -56,13 +56,13 @@ def main():
             print("Cant download list for {0}".format(proper))
             print("{0}".format(err.strerror))
 
-    if args.no_showname:
-        for ep in files:
-            ep.setEpName(shows[ep.show].getTitle(ep.season, ep.episode))
-
-    else:
-        for ep in files:
+    for ep in files:
+        ep.properShow = shows[ep.show].showName
+        if args.complete:
             ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
+
+        else:
+            ep.setEpName(shows[ep.show].getTitle(ep.season, ep.episode))
 
     files.sort(key=lambda x: x.epname)
 
