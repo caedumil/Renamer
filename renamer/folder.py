@@ -61,7 +61,7 @@ class Folder():
 
         return
 
-    def setEpName(self, name, showName=True):
+    def setEpName(self, name):
         '''
         Use name to set the new filename.
         '''
@@ -69,16 +69,11 @@ class Folder():
         proper = name.replace("/", "-")
 
         self.epname = \
-            "{0} - {1}x{2} - {3}{4}".format(
-                self.properShow, self.season, self.episode, proper, ext
-            ) \
-            if showName else \
-            "{0}x{1} - {2}{3}".format(
-                self.season, self.episode, proper, ext
-            )
+            "{0}x{1} - {2}{3}".format(self.season, self.episode, proper, ext)
 
-    def addShowName(self):
-        self.epname = "{0} - {1}".format(self.show, self.epname)
+    def setFullName(self, name):
+        self.setEpName(name)
+        self.epname = "{0} - {1}".format(self.properShow, self.epname)
 
     def rename(self):
         '''

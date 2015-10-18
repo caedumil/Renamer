@@ -52,10 +52,13 @@ def main():
             print("Cant download list for {0}".format(proper))
             print("{0}".format(err.strerror))
 
-    for ep in files:
-        ep.setEpName(
-            shows[ep.show].getTitle(ep.season, ep.episode), (not args.no_showname)
-        )
+    if args.no_showname:
+        for ep in files:
+            ep.setEpName(shows[ep.show].getTitle(ep.season, ep.episode))
+
+    else:
+        for ep in files:
+            ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
 
     if files:
         files.sort(key=lambda x: x.epname)
