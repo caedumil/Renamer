@@ -10,6 +10,9 @@ import urllib.request as url
 #
 class Show():
     def __init__(self, showName):
+        self.showName = None
+        self.showID = None
+        self.showTVDB = None
         self._getID(showName)
         self._getEpJson()
 
