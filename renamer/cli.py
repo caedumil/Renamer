@@ -31,7 +31,7 @@ def main():
     args = parser.parse_args()
 
     fileList = []
-    for path in args.path:
+    for path in [ x for x in args.path if os.path.exists(x) ]:
         if os.path.isdir(path):
             content = map( (lambda x: os.path.join(path, x) ), os.listdir(path))
 
