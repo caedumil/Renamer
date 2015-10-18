@@ -33,14 +33,14 @@ def main():
     fileList = []
     for path in [ x for x in args.path if os.path.exists(x) ]:
         if os.path.isdir(path):
-            content = map( (lambda x: os.path.join(path, x) ), os.listdir(path))
+            content = map((lambda x: os.path.join(path, x)), os.listdir(path))
 
         else:
             content = [ os.path.join(os.curdir, path) ]
 
         fileList += [ x for x in content ]
 
-    files = [ x for x in map( (lambda x: folder.Folder(x)), fileList ) if x.show ]
+    files = [ x for x in map((lambda x: folder.Folder(x)), fileList) if x.show ]
 
     if not files:
         print("Nothing to do...")
