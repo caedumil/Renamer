@@ -34,8 +34,13 @@ class Folder():
 
         return numbers.sub("", dots.sub("+", show)).strip("+")
 
+    def _episode(self, ep):
+        regex = re.compile("(\d{2})")
+
+        return regex.findall(ep)
+
     def _parseName(self):
-        regex1 = re.compile("s(\d{2})e(\d{2})", re.I)
+        regex1 = re.compile("s?(\d{2})[ex](\d{2}(\.?[ex-]\d{2})*)", re.I)
         regex2 = re.compile("(\d{2})(\d{2,)")
         regex3 = re.compile("(\d)(\d{2,})")
 
@@ -57,7 +62,7 @@ class Folder():
         self.show = self._formatName(show)
         self.properShow = self.show.replace("+", " ")
         self.season = "{:0>2}".format(season)
-        self.episode = episode
+        self.episode = self._episode(episode)
 
         return
 
@@ -66,10 +71,11 @@ class Folder():
         Use name to set the new filename.
         '''
         _, ext = os.path.splitext(self.filename)
-        proper = name.replace("/", "-")
+        properName = name.replace("/", "-")
+        properEp = "-".join(self.episode)
 
         self.epname = \
-            "{0}x{1} - {2}{3}".format(self.season, self.episode, proper, ext)
+            "{0}x{1} - {2}{3}".format(self.season, properEp, properName, ext)
 
     def setFullName(self, name):
         self.setEpName(name)

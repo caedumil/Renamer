@@ -52,4 +52,6 @@ class Show():
     def getTitle(self, season, episode):
         ss = self.getSeason(season)
 
-        return ss[episode]
+        names = [ ss[x] for x in episode ]
+
+        return "-".join(names)
