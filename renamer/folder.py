@@ -32,7 +32,9 @@ class Folder():
         dots = re.compile("[^a-z0-9]", re.I)
         numbers = re.compile("[12][0-9]{3}")
 
-        return numbers.sub("", dots.sub("+", show)).strip("+")
+        name = numbers.sub("", dots.sub("+", show)).strip("+")
+
+        return name.title()
 
     def _episode(self, ep):
         regex = re.compile("(\d{2})")
