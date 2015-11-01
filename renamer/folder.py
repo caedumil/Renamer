@@ -42,7 +42,7 @@ class Folder():
         return regex.findall(ep)
 
     def _parseName(self):
-        regex1 = re.compile("s?(\d{2})[ex](\d{2}(\.?[ex-]\d{2})*)", re.I)
+        regex1 = re.compile("s?(\d{1,2})[ex](\d{2}(\.?[ex-]\d{2})*)", re.I)
         regex2 = re.compile("(\d{2})(\d{2,)")
         regex3 = re.compile("(\d)(\d{2,})")
 
