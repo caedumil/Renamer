@@ -12,7 +12,7 @@ from . import folder
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-v", "--version", action="version", version="%(prog)s -- 0.0.1.dev1"
+        "-v", "--version", action="version", version="%(prog)s -- 0.0.1"
     )
     parser.add_argument(
         "-y", "--no-confirm", action="store_true",
