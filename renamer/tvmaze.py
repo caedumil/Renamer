@@ -9,6 +9,9 @@ import urllib.request as url
 # Class
 #
 class Show():
+    '''
+    Query TVMaze.com and download the full episode list for the show
+    '''
     def __init__(self, showName):
         self.showName = None
         self.showID = None
@@ -47,9 +50,15 @@ class Show():
         return
 
     def getSeason(self, season):
+        '''
+        Return the episode list of season
+        '''
         return self._showEPs[season]
 
     def getTitle(self, season, episode):
+        '''
+        Return the episode name for season, episode
+        '''
         ss = self.getSeason(season)
 
         names = [ ss[x] for x in episode ]

@@ -80,6 +80,9 @@ class Folder():
             "{0}x{1} - {2}{3}".format(self.season, properEp, properName, ext)
 
     def setFullName(self, name):
+        '''
+        Prepend show name to the formated filename
+        '''
         self.setEpName(name)
         self.epname = "{0} - {1}".format(self.properShow, self.epname)
 
