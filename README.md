@@ -13,7 +13,7 @@ By default it will look online for the information.
 * `-h`, `--help` help message
 * `-v`, `--version` version information
 * `-y`, `--no-confirm` don't ask for confirmation to rename the files
-* `-c`, `--complete` add show nome to the filename
+* `-s`, `--simple` create filename without the show name
 * episodes FOLDER
 
 The FILE is a plain text file with one episode name per line.

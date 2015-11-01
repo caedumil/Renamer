@@ -20,7 +20,7 @@ def main():
         help="Do not ask for confirmation"
     )
     parser.add_argument(
-        "-c", "--complete", action="store_true",
+        "-s", "--simple", action="store_true",
         help="Add the serie name to the final filename"
     )
     parser.add_argument(
@@ -57,11 +57,11 @@ def main():
 
     for ep in files:
         ep.properShow = shows[ep.show].showName
-        if args.complete:
-            ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
+        if args.simple:
+            ep.setEpName(shows[ep.show].getTitle(ep.season, ep.episode))
 
         else:
-            ep.setEpName(shows[ep.show].getTitle(ep.season, ep.episode))
+            ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
 
     files.sort(key=lambda x: x.epname)
 
