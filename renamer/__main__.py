@@ -8,11 +8,12 @@ import urllib.error as urlerr
 
 from . import tvmaze
 from . import folder
+from . import __version__
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-v", "--version", action="version", version="%(prog)s -- 0.0.1"
+        "-v", "--version", action="version", version=__version__
     )
     parser.add_argument(
         "-y", "--no-confirm", action="store_true",

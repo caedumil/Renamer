@@ -56,7 +56,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'renamer-cli = renamer.cli:main',
+            'renamer-cli = renamer.__main__:main',
         ],
     },
 )
