@@ -5,9 +5,10 @@ season number, episode number and episode name.
 
 By default it will look online for the information.
 
+
 ## How to use?
 
-    renamer-cli [-h] [-v] [-y] [-c] FOLDER [FOLDER ...]
+    renamer.py [-h] [-v] [-y] [-c] FOLDER [FOLDER ...]
 
 * `-h`, `--help` help message
 * `-v`, `--version` version information
