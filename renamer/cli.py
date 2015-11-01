@@ -1,5 +1,3 @@
-#!/usr/bin/env  python3
-
 #   Copyright (c) 2015, Carlos Millett
 #   All rights reserved.
 
@@ -8,8 +6,8 @@ import sys
 import argparse
 import urllib.error as urlerr
 
-import tvmaze as tv
-import folder
+from . import tvmaze
+from . import folder
 
 def main():
     parser = argparse.ArgumentParser()
@@ -50,7 +48,7 @@ def main():
     for serie, proper in set( (x.show, x.properShow) for x in files ):
         try:
             print("Downloading episode list for {0}.".format(proper))
-            shows[serie] = tv.Show(serie)
+            shows[serie] = tvmaze.Show(serie)
 
         except urlerr.URLError as err:
             print("Cant download list for {0}".format(proper))
