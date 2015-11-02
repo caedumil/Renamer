@@ -15,5 +15,3 @@ By default it will look online for the information.
 * `-y`, `--no-confirm` don't ask for confirmation to rename the files
 * `-s`, `--simple` create filename without the show name
 * episodes FOLDER
-
-The FILE is a plain text file with one episode name per line.
