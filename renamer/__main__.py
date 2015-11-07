@@ -63,7 +63,15 @@ def main():
         else:
             ep.setFullName(shows[ep.show].getTitle(ep.season, ep.episode))
 
-    files.sort(key=lambda x: x.epname)
+        if ep.filename == ep.epname:
+            files.remove(ep)
+
+    if files:
+        files.sort(key=lambda x: x.epname)
+
+    else:
+        print("Current and new filenames are the same, exiting...")
+        sys.exit(1)
 
     if not args.no_confirm:
         for ep in files:
