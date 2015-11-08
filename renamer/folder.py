@@ -34,7 +34,7 @@ class Folder():
 
         name = numbers.sub("", dots.sub("+", show)).strip("+")
 
-        return name.title()
+        return name.upper()
 
     def _episode(self, ep):
         regex = re.compile("(\d{2})")
