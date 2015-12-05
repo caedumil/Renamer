@@ -3,6 +3,7 @@
 
 import os
 import sys
+import platform
 import argparse
 import urllib.error as urlerr
 
@@ -86,7 +87,11 @@ def main():
             ep.rename()
 
     except PermissionError as err:
-        print("{0}\n{1}".format(err.strerror, err.filename))
+        print("{0}\n{1}\n".format(err.strerror, err.filename))
+
+        if platform.system() == "Windows":
+            input("Press Enter to quit")
+
         sys.exit(err.errno)
 
 if __name__ == "__main__":
