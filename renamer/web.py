@@ -39,82 +39,74 @@ from urllib import error as urlerr
 #
 class Web():
     def __init__(self):
-        self.serieSearch ="http://api.tvmaze.com/singlesearch/shows?q={}"
-        self.serieEps = "http://api.tvmaze.com/shows/{}/episodes"
-        self.movieSearch = "http://www.omdbapi.com/?t={}&y={}&plot=short&r=json"
+        self.url = [ "http://www.omdbapi.com/?r=json" ]
 
 
-    def downloadData(self, **kwargs):
-        if kwargs.get("title") and kwargs.get("year"):
-            saneName = (lambda x: re.sub("\W+", "+", x))(kwargs["title"])
-            link = self.movieSearch.format(saneName.upper(), kwargs["year"])
+    def downloadData(self, mediaTitle, **kwargs):
+        saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
+        self.url.append("t={}".format(saneTitle))
 
-        elif kwargs.get("title"):
-            saneName = (lambda x: re.sub("\W+", "+", x))(kwargs["title"])
-            link = self.serieSearch.format(saneName.upper())
+        if self.type == "movie":
+            self.url.append("y={}".format(kwargs["year"]))
 
-        elif kwargs.get("id"):
-            link = self.serieEps.format(kwargs["id"])
+        elif self.type == "series":
+            self.url.append("season={}".format(kwargs["season"]))
 
         try:
+            link = "&".join(self.url)
             down = url.urlopen(link)
             data = down.read()
+            text =  json.loads(data.decode("UTF-8"))
 
-            return json.loads(data.decode("UTF-8"))
+            if text["Response"] == "False":
+                raise NotFoundError("{} - {}".format(text["Error"], mediaTitle))
+
+            return text
 
         except urlerr.URLError:
             raise DownloadError("Failed to fetch - {}".format(link))
 
 
 class TvShow(Web):
-    def __init__(self, showTitle):
+    def __init__(self, showTitle, showSeason):
+        self.type = "series"
         super().__init__()
-        self._showInfo = super().downloadData(title=showTitle)
-        self._episodesIndex = None
+        self._showInfo = super().downloadData(showTitle, season=showSeason)
+        self._episodesTitle = None
 
         match = difflib.SequenceMatcher(None,
                                         showTitle.upper(),
-                                        self._showInfo["name"].upper())
+                                        self._showInfo["Title"].upper())
 
         if match.ratio() < 0.8:
             strerror = "Searched for {}. Found {}".format(showTitle.upper(),
-                                                          self._showInfo["name"].upper())
+                                                          self._showInfo["Title"].upper())
             raise NotFoundError(strerror)
 
 
     @property
     def showTitle(self):
-        return self._showInfo["name"]
+        return self._showInfo["Title"]
 
 
     @property
-    def showTVDB(self):
-        return self._showInfo["externals"]["thetvdb"]
+    def showSeason(self):
+        return "{:0>2}".format(self._showInfo["Season"])
 
 
     @property
-    def episodesIndex(self):
-        if not self._episodesIndex:
-            info = super().downloadData(id=self._showInfo["id"])
-            self._episodesIndex = {
-                    "{:0>2}".format(x): {
-                    "{:0>2}".format(y["number"]): y["name"]
-                    for y in info if y["season"] == x
-                }
-                for x in set( z["season"] for z in info )
-            }
-        return self._episodesIndex
+    def episodeTitle(self):
+        if not self._episodesTitle:
+            self._episodesTitle = { "{:0>2}".format(x["Episode"]): x["Title"]
+                                    for x in self._showInfo["Episodes"] }
+        return self._episodesTitle
 
 
 class Movie(Web):
     def __init__(self, movieTitle, movieYear):
+        self.type = "movie"
         super().__init__()
-        self._info = super().downloadData(title=movieTitle, year=movieYear)
-
-        if not bool(self._info["Response"]):
-            title = movieTitle.upper()
-            raise NotFoundError("{} - {}".format(self._info["Error"], title))
-
+        self._info = super().downloadData(movieTitle, year=movieYear)
 
     @property
     def movieTitle(self):
