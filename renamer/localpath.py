@@ -95,6 +95,7 @@ class LocalPath():
                  ord("?"): None,
                  ord("!"): None,
                  ord("*"): None,
+                 ord("#"): None,
                  ord("/"): None,
                  ord("\\"): None,
                  ord("\""): None,
