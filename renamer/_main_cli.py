@@ -63,9 +63,10 @@ def main():
     filesList = []
     for path in [ os.path.abspath(x) for x in args.path if os.path.exists(x) ]:
         if args.recursive and os.path.isdir(path):
+            tmp = []
             tree = [ (x, y) for x, _, y in os.walk(path) if y ]
             for root, files in tree:
-                tmp = map((lambda x: os.path.join(root, x)), files)
+                tmp.extend(map((lambda x: os.path.join(root, x)), files))
 
         elif os.path.isdir(path):
             tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
