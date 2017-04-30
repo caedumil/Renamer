@@ -38,19 +38,14 @@ from urllib import error as urlerr
 # Class
 #
 class Web():
-    def __init__(self):
-        self.url = [ "http://www.omdbapi.com/?r=json" ]
-
-
     def downloadData(self, mediaTitle, **kwargs):
         saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
-        self.url.append("t={}".format(saneTitle))
 
         if self.type == "movie":
-            self.url.append("y={}".format(kwargs["year"]))
+            self.url.extend([ "t={}".format(saneTitle), "y={}".format(kwargs["year"]) ])
 
-        elif self.type == "series":
-            self.url.append("season={}".format(kwargs["season"]))
+        elif self.type == "tvshow":
+            self.url.extend([ "q={}".format(saneTitle) , "embed=episodes" ])
 
         try:
             link = "&".join(self.url)
@@ -58,7 +53,7 @@ class Web():
             data = down.read()
             text =  json.loads(data.decode("UTF-8"))
 
-            if text["Response"] == "False":
+            if text.get("Response") == "False":
                 raise NotFoundError("{} - {}".format(text["Error"], mediaTitle))
 
             return text
@@ -68,45 +63,49 @@ class Web():
 
 
 class TvShow(Web):
-    def __init__(self, showTitle, showSeason):
-        self.type = "series"
-        super().__init__()
-        self._showInfo = super().downloadData(showTitle, season=showSeason)
-        self._episodesTitle = None
+    def __init__(self, showTitle):
+        self.type = "tvshow"
+        self.url = [ "http://api.tvmaze.com/singlesearch/shows?" ]
+        self._showInfo = super().downloadData(showTitle)
+        self._season = None
+        self._curSeason = None
 
         match = difflib.SequenceMatcher(None,
                                         showTitle.upper(),
-                                        self._showInfo["Title"].upper())
+                                        self._showInfo["name"].upper())
 
         if match.ratio() < 0.8:
             strerror = "Searched for {}. Found {}".format(showTitle.upper(),
-                                                          self._showInfo["Title"].upper())
+                                                          self._showInfo["name"].upper())
             raise NotFoundError(strerror)
 
 
     @property
     def showTitle(self):
-        return self._showInfo["Title"]
+        return self._showInfo["name"]
 
 
     @property
     def showSeason(self):
-        return "{:0>2}".format(self._showInfo["Season"])
+        return self._season
 
 
-    @property
-    def episodeTitle(self):
-        if not self._episodesTitle:
-            self._episodesTitle = { "{:0>2}".format(x["Episode"]): x["Title"]
-                                    for x in self._showInfo["Episodes"] }
-        return self._episodesTitle
+    @showSeason.setter
+    def showSeason(self, season):
+        if self._curSeason != season:
+            self._curSeason = season
+            _info = self._showInfo["_embedded"]["episodes"]
+            self._season = { "{:0>2}".format(x["number"]):x["name"] for x in _info
+                             if "{:0>2}".format(x["season"]) == self._curSeason
+                           }
 
 
 class Movie(Web):
     def __init__(self, movieTitle, movieYear):
         self.type = "movie"
-        super().__init__()
+        self.url = [ "http://www.omdbapi.com/?r=json" ]
         self._info = super().downloadData(movieTitle, year=movieYear)
+
 
     @property
     def movieTitle(self):

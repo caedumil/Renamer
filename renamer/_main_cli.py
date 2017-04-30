@@ -95,33 +95,27 @@ def main():
         print("Nothing to do.")
         sys.exit()
 
-    showsList = [ x for x in set( (x.show, x.season) for x in showFiles ) ]
-
 
     showEps = {}
-    for entry in showsList:
-        show = entry[0]
-        season = entry[1]
-
-        print("Downloading episode names for {0}-S{1}.".format(show.upper(), season))
-        showEps[(show, season)] = web.TvShow(show, season)
+    for show in set( x.show for x in showFiles ):
+        print("Downloading episode names for {0}.".format(show.upper()))
+        showEps[show] = web.TvShow(show)
 
 
     print("Setting new filename.")
     for ep in showFiles:
-        key = (ep.show, ep.season)
-        serie = showEps[key].showTitle
-        season = ep.season
+        serie = showEps[ep.show].showTitle
+        showEps[ep.show].showSeason = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[key].episodeTitle[x] for x in ep.episodes ] )
+        title = "-".join( [ showEps[ep.show].showSeason[x] for x in ep.episodes ] )
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
-        ep.newFileName = newFileName.format(serie, season, episode, title)
+        ep.newFileName = newFileName.format(serie, ep.season, episode, title)
 
 
     showFiles.sort(key=lambda x: x.newFileName)
     for i in showFiles:
-        print("<<< {0}\n>>> {1}".format(i.curFileName, i.newFileName))
+        print("--- {0}\n+++ {1}".format(i.curFileName, i.newFileName))
 
 
     if not args.no_confirm:
