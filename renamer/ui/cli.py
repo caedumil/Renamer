@@ -28,9 +28,9 @@ import os
 import sys
 import argparse
 
-from . import web
-from . import localpath
-from . import __version__
+from renamer import web
+from renamer import localpath
+from renamer import __version__
 
 
 def main():

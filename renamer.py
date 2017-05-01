@@ -26,6 +26,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-from renamer._main_cli import main
+from renamer.ui import cli
 
-main()
+cli.main()
