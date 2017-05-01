@@ -32,6 +32,6 @@ from renamer import web
 
 
 # Information
-__version__ = '0.0.3'
+__version__ = '0.1.0'
 __author__ = __maintainer__ = 'Caedus75'
 __email__ = 'caedus75@gmail.com'
