@@ -5,6 +5,9 @@ season number, episode number and episode name.
 
 By default it will look online for the information.
 
+- [TV Shows](http://www.tvmaze.com/)
+- [Movies](http://www.omdbapi.com)
+
 
 ## How to use?
 
@@ -14,4 +17,5 @@ By default it will look online for the information.
 * `-v`, `--version` version information
 * `-y`, `--no-confirm` don't ask for confirmation to rename the files
 * `-s`, `--simple` create filename without the show name
+* `-r`, `--recursive` list content of folders recursively
 * episodes FOLDER
