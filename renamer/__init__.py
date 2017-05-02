@@ -24,6 +24,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+#
+# Import
+#
+from renamer import localpath
+from renamer import web
+
+
 # Information
 __version__ = '0.0.3'
 __author__ = __maintainer__ = 'Caedus75'
