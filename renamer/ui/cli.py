@@ -26,7 +26,9 @@
 
 import os
 import sys
+import logging
 import argparse
+import platform
 
 from renamer import web
 from renamer import localpath
@@ -51,6 +53,12 @@ def main():
                         "--recursive",
                         action="store_true",
                         help="Recursively descend into directories.")
+    parser.add_argument("-l",
+                        "--loglevel",
+                        metavar="LEVEL",
+                        default="INFO",
+                        type=str,
+                        help="Set log level (INFO, WARN, ERROR).")
     parser.add_argument("path",
                         type=str,
                         metavar="FILE",
@@ -59,52 +67,79 @@ def main():
     args = parser.parse_args()
 
 
-    print("Listing files.")
+    logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
+    logPath = os.path.join(logDir, "renamer.log")
+    logLevel = getattr(logging, args.loglevel.upper(), None)
+
+    consoleOut = logging.StreamHandler()
+    consoleFormat = logging.Formatter("%(levelname)s - %(message)s")
+    consoleOut.setLevel(logging.INFO)
+    consoleOut.setFormatter(consoleFormat)
+
+    fileOut = logging.FileHandler(logPath, mode="w")
+    fileFormat = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
+    fileOut.setLevel(logging.WARN)
+    fileOut.setFormatter(fileFormat)
+
+    logger = logging.getLogger("renamer")
+    logger.setLevel(logLevel)
+    logger.addHandler(consoleOut)
+    logger.addHandler(fileOut)
+
+
     filesList = []
     for path in [ os.path.abspath(x) for x in args.path if os.path.exists(x) ]:
         if args.recursive and os.path.isdir(path):
+            logger.info("Descending into {0}.".format(path))
             tmp = []
             tree = [ (x, y) for x, _, y in os.walk(path) if y ]
             for root, files in tree:
                 tmp.extend(map((lambda x: os.path.join(root, x)), files))
 
         elif os.path.isdir(path):
+            logger.info("Entering {0}.".format(path))
             tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
 
         else:
+            logger.info("Listing {0}.".format( path))
             tmp = [ path ]
 
         filesList.extend(tmp)
 
     if not filesList:
-        print("Nothing found.")
+        logger.error("No valid file(s) found.")
         sys.exit()
 
 
 
-    print("Reading filename for SERIES information.")
     showFiles = []
     for entry in filesList:
         try:
+            logger.info("Trying to match patterns to {0}.".format(os.path.basename(entry)))
             fileObj = localpath.SerieFile(entry)
             showFiles.append(fileObj)
 
         except localpath.MatchNotFoundError as err:
-            print(err)
+            logger.warn(err)
 
 
     if not showFiles:
-        print("Nothing to do.")
+        logger.error("No valid filename(s) found.")
         sys.exit()
 
 
     showEps = {}
     for show in set( x.show for x in showFiles ):
-        print("Downloading episode names for {0}.".format(show.upper()))
-        showEps[show] = web.TvShow(show)
+        try:
+            logger.info("Downloading episode list for {0}.".format(show.upper()))
+            showEps[show] = web.TvShow(show)
+
+        except web.DownloadError:
+            logger.warn("Failed to download data.")
+            showFiles = [ x for x in showFiles if x.show != show ]
 
 
-    print("Setting new filename.")
+    logger.info("Setting new filename(s).")
     for ep in showFiles:
         serie = showEps[ep.show].showTitle
         showEps[ep.show].showSeason = ep.season
@@ -131,11 +166,11 @@ def main():
             ep.rename()
 
         except localpath.SameFileError as err:
-            print(err)
+            logger.warn(err)
 
         except PermissionError as err:
-            print("{0}\n{1}\n".format(err.strerror, err.filename))
-            sys.exit(err.errno)
+            strerr = "Can't rename {0} - {1}.".format(ep.curFileName, err.strerror)
+            logger.error(strerr)
 
 
 if __name__ == "__main__":

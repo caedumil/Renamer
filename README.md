@@ -18,4 +18,5 @@ By default it will look online for the information.
 * `-y`, `--no-confirm` don't ask for confirmation to rename the files
 * `-s`, `--simple` create filename without the show name
 * `-r`, `--recursive` list content of folders recursively
+* `-l`, `--loglevel` Set log level (INFO, WARN, ERROR)
 * episodes FOLDER
