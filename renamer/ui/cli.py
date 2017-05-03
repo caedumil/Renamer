@@ -110,6 +110,7 @@ def main():
         logger.error("No valid file(s) found.")
         sys.exit()
 
+    filesList =  [ x for x in filesList if not os.path.isdir(x) ]
 
 
     showFiles = []
