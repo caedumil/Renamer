@@ -120,15 +120,20 @@ class LocalPath():
 class SerieFile(LocalPath):
     def __init__(self, filename):
         super().__init__(filename)
-        regex1 = re.compile("\.S(\d{2})((E\d{2})+)\.")
-        regex2 = re.compile("\.(\d{4}.)?(\d{3,})\.")
+        rSSEE = re.compile("\.S(\d{2})((E\d{2})+)\.")
+        rSSxEE = re.compile(" (\d{2})x(\d{2}) ")
+        rSEE = re.compile("\.(\d{4}.)?(\d{3,})\.")
 
-        if regex1.search(self.curFileName):
-            show, season, info = regex1.split(self.curFileName)[:3]
+        if rSSEE.search(self.curFileName):
+            show, season, info = rSSEE.split(self.curFileName)[:3]
             eps = re.findall("\d{2}", info)
 
-        elif regex2.search(self.curFileName):
-            show, _, info = regex2.split(self.curFileName)[:3]
+        elif rSSxEE.search(self.curFileName):
+            show, season, info = rSSxEE.split(self.curFileName)[:3]
+            eps = re.findall("\d{2}", info)
+
+        elif rSEE.search(self.curFileName):
+            show, _, info = rSEE.split(self.curFileName)[:3]
 
             info_lst = list(info)
             info_lst.reverse()
