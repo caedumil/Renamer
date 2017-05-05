@@ -24,6 +24,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+"""
+Renamer renames your TV files into a nice new format.
+The new filename includes the TV show name, season and episode numbers and
+the episode title.
+"""
+
+
 #
 # Import
 #
@@ -32,6 +39,7 @@ from renamer import web
 
 
 # Information
-__version__ = '0.1.0'
-__author__ = __maintainer__ = 'Caedus75'
-__email__ = 'caedus75@gmail.com'
+__version__ = "0.1.0"
+__author__ = "Carlos Millett"
+__email__ = "carlos4735@gmail.com"
+__maintainer__ = "Carlos Millett"
