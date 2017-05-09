@@ -120,7 +120,7 @@ class LocalPath():
 class SerieFile(LocalPath):
     def __init__(self, filename):
         super().__init__(filename)
-        rSSEE = re.compile("\.S(\d{2})((E\d{2})+)\.")
+        rSSEE = re.compile("\.S(\d{2})((E\d{2})+)\.", re.I)
         rSSxEE = re.compile(" (\d{2})x(\d{2}) ")
         rSEE = re.compile("\.(\d{4}.)?(\d{3,})\.")
 
