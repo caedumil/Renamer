@@ -60,7 +60,7 @@ class Web():
             return text
 
         except urlerr.URLError:
-            raise DownloadError("Failed to fetch - {}".format(link))
+            raise DownloadError("Failed to fetch data for {}".format(mediaTitle))
 
 
 class TvShow(Web):
