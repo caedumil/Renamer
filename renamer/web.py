@@ -82,17 +82,17 @@ class TvShow(Web):
 
 
     @property
-    def showTitle(self):
+    def title(self):
         return self._showInfo["name"]
 
 
     @property
-    def showSeason(self):
+    def season(self):
         return self._season
 
 
-    @showSeason.setter
-    def showSeason(self, season):
+    @season.setter
+    def season(self, season):
         if self._curSeason != season:
             self._curSeason = season
             _info = self._showInfo["_embedded"]["episodes"]
@@ -109,17 +109,17 @@ class Movie(Web):
 
 
     @property
-    def movieTitle(self):
+    def title(self):
         return self._info["Title"]
 
 
     @property
-    def movieYear(self):
+    def year(self):
         return self._info["Year"]
 
 
     @property
-    def movieIMDB(self):
+    def IMDB(self):
         return self._info["imdbID"]
 
 

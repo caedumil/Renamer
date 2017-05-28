@@ -147,10 +147,10 @@ def main():
 
     logger.info("Setting new filename(s).")
     for ep in showFiles:
-        serie = showEps[ep.show].showTitle
-        showEps[ep.show].showSeason = ep.season
+        serie = showEps[ep.show].title
+        showEps[ep.show].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[ep.show].showSeason[x] for x in ep.episodes ] )
+        title = "-".join( [ showEps[ep.show].season[x] for x in ep.episodes ] )
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)
