@@ -135,9 +135,14 @@ def main():
             logger.info("Downloading episode list for {0}.".format(show.upper()))
             showEps[show] = web.TvShow(show)
 
-        except web.DownloadError:
-            logger.warn("Failed to download data.")
+        except ( web.DownloadError, web.NotFoundError ) as err:
+            logger.warn(err)
             showFiles = [ x for x in showFiles if x.show != show ]
+
+
+    if not showEps:
+        logger.error("Could not download list of episodes for any show.")
+        sys.exit()
 
 
     logger.info("Setting new filename(s).")
