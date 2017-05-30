@@ -130,27 +130,32 @@ def main():
 
 
     showEps = {}
-    for show in set( x.show for x in showFiles ):
+    for show in set( (x.title, x.country, x.year) for x in showFiles ):
         try:
-            logger.info("Downloading episode list for {0}.".format(show.upper()))
-            showEps[show] = web.TvShow(show)
+            logger.info("Downloading information for {0}.".format(show[0].upper()))
+            showEps[show[0]] = web.TvShow(show[0], show[1], show[2])
 
         except ( web.DownloadError, web.NotFoundError ) as err:
             logger.warn(err)
-            showFiles = [ x for x in showFiles if x.show != show ]
+            showFiles = [ x for x in showFiles if x.title != show ]
 
 
-    if not showEps:
+    if showEps:
+        for show in showEps.values():
+            logger.info("Downloading episodes list for {0}.".format(show.title))
+            show.populate()
+
+    else:
         logger.error("Could not download list of episodes for any show.")
         sys.exit()
 
 
     logger.info("Setting new filename(s).")
     for ep in showFiles:
-        serie = showEps[ep.show].title
-        showEps[ep.show].season = ep.season
+        serie = showEps[ep.title].title
+        showEps[ep.title].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[ep.show].season[x] for x in ep.episodes ] )
+        title = "-".join( [ showEps[ep.title].season[x] for x in ep.episodes ] )
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)

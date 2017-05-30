@@ -107,14 +107,57 @@ class LocalPath():
 
 
     def _formatName(self, name):
-        sep = re.compile("[\W]+")
-        year = re.compile("[12][0-9]{3}")
-        country = re.compile("[A-Z]{2}")
+        reSep = re.compile("[\W]+")
+        reYear = re.compile("[12][0-9]{3}")
+        reCountry = re.compile("[A-Z]{2}")
+        countryCodes = [
+                        "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ",
+                        "AR", "AS", "AT", "AU", "AW", "AX", "AZ", "BA", "BB",
+                        "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BL", "BM",
+                        "BN", "BO", "BQ", "BR", "BS", "BT", "BV", "BW", "BY",
+                        "BZ", "CA", "CC", "CD", "CF", "CG", "CH", "CI", "CK",
+                        "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX",
+                        "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC",
+                        "EE", "EG", "EH", "ER", "ES", "ET", "FI", "FJ", "FK",
+                        "FM", "FO", "FR", "GA", "UK", "GD", "GE", "GF", "GG",
+                        "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GS",
+                        "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT",
+                        "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IR",
+                        "IS", "IT", "JE", "JM", "JO", "JP", "KE", "KG", "KH",
+                        "KI", "KM", "KN", "KP", "KR", "KW", "KY", "KZ", "LA",
+                        "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV",
+                        "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK",
+                        "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS", "MT",
+                        "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE",
+                        "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU", "NZ",
+                        "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM",
+                        "PN", "PR", "PS", "PT", "PW", "PY", "QA", "RE", "RO",
+                        "RS", "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG",
+                        "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR",
+                        "SS", "ST", "SV", "SX", "SY", "SZ", "TC", "TD", "TF",
+                        "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO", "TR",
+                        "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "US", "US",
+                        "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU",
+                        "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW"
+                       ]
 
-        formated = year.sub("", country.sub("", name))
-        formated = sep.sub(" ", formated).strip()
+        nameOnly = country = year = None
+        tmp = name
 
-        return formated.title()
+        if reCountry.search(name):
+            match = reCountry.findall(name)[0]
+
+            if match in countryCodes:
+                country = match
+                tmp = reCountry.sub("", name)
+
+        if reYear.search(name):
+            match = reYear.findall(name)
+            year = match[0]
+
+        nameOnly = reSep.sub(" ", reYear.sub("", tmp)).strip()
+
+        return { "title":nameOnly.title(), "country":country, "year":year }
 
 
 class SerieFile(LocalPath):
@@ -150,9 +193,24 @@ class SerieFile(LocalPath):
             strerror = "Can't find show pattern for {}".format(self.curFileName)
             raise MatchNotFoundError(strerror)
 
-        self.show = super()._formatName(show)
+        self._show = super()._formatName(show)
         self.season = "{:0>2}".format(season)
         self.episodes = eps
+
+
+    @property
+    def title(self):
+        return self._show.get("title")
+
+
+    @property
+    def country(self):
+        return self._show.get("country")
+
+
+    @property
+    def year(self):
+        return self._show.get("year")
 
 
 class MovieFile(LocalPath):
@@ -165,10 +223,19 @@ class MovieFile(LocalPath):
             raise MatchNotFoundError(strerror)
 
         splitName = regex.findall(self.curFileName)
-        movie, year = splitName[0]
+        movie, _ = splitName[0]
 
-        self.title = super()._formatName(movie)
-        self.year = year
+        self._movie = super()._formatName(movie)
+
+
+    @property
+    def title(self):
+        return self._movie.get("title")
+
+
+    @property
+    def year(self):
+        return self._movie.get("year")
 
 
 #

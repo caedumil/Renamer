@@ -30,9 +30,11 @@
 import re
 import json
 import difflib
+import time
 
-from urllib import request as url
+from urllib import request as urlRequest
 from urllib import error as urlerr
+from collections import namedtuple
 
 
 #
@@ -43,18 +45,25 @@ class Web():
         saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
 
         if self.type == "movie":
-            self.url.extend([ "t={}".format(saneTitle), "y={}".format(kwargs["year"]) ])
+            url = [ self.url ]
+            url.extend([ "t={}".format(saneTitle), "y={}".format(kwargs["year"]) ])
+            link = "&".join(url)
 
         elif self.type == "tvshow":
-            self.url.extend([ "q={}".format(saneTitle) , "embed=episodes" ])
+            if kwargs["action"] == "search":
+                url = [ self.url ]
+                url.extend([ "search", "q={}".format(saneTitle) ])
+                link = "&".join(url)
+
+            elif kwargs["action"] == "lookup":
+                link = self._show.link
 
         try:
-            link = "&".join(self.url)
-            down = url.urlopen(link)
+            down = urlRequest.urlopen(link)
             data = down.read()
             text =  json.loads(data.decode("UTF-8"))
 
-            if text.get("Response") == "False":
+            if isinstance(text, dict) and text.get("Response") == "False":
                 raise NotFoundError("{} - {}".format(text["Error"], mediaTitle))
 
             return text
@@ -64,26 +73,61 @@ class Web():
 
 
 class TvShow(Web):
-    def __init__(self, showTitle):
+    def __init__(self, title, country=None, year=None):
         self.type = "tvshow"
-        self.url = [ "http://api.tvmaze.com/singlesearch/shows?" ]
-        self._showInfo = super().downloadData(showTitle)
+        self.url = "http://api.tvmaze.com/search/shows?"
+        self._show = None
         self._season = None
         self._curSeason = None
 
-        match = difflib.SequenceMatcher(None,
-                                        showTitle.upper(),
-                                        self._showInfo["name"].upper())
+        showInfo = super().downloadData(title, action="search")
 
-        if match.ratio() < 0.8:
-            strerror = "Searched for {}. Found {}".format(showTitle.upper(),
-                                                          self._showInfo["name"].upper())
+        showsList = []
+        showCand = namedtuple("Show", ["title", "country", "premier", "link"])
+        for entry in showInfo:
+            match = difflib.SequenceMatcher(None,
+                                            title.upper(),
+                                            entry["show"]["name"].upper())
+
+            if match.ratio() < 0.8:
+                continue
+
+            showsList.append(showCand(title = entry["show"]["name"],
+                                      country = entry["show"]["network"]["country"]["code"],
+                                      premier = entry["show"]["premiered"],
+                                      link = "{}/episodes".format(entry["show"]["_links"]["self"]["href"])
+                                     ))
+
+        if not showsList:
+            strerror = "Could not find {}.".format(title.upper())
             raise NotFoundError(strerror)
+
+        showsList.sort(key=lambda x: x.premier, reverse=True)
+
+        if year and country:
+            selYear = [ x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
+            selCountry = [ x for x in showsList if country == x.country ]
+            sel = list( filter( lambda x: x in selYear, selCountry ) )
+
+        elif year:
+            sel= [ x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
+
+        elif country:
+            sel= [ x for x in showsList if country == x.country ]
+
+        else:
+            sel = showsList
+
+        self._show = sel.pop()
+
+
+    def populate(self):
+        self._epsInfo = super().downloadData(self._show.title, action="lookup")
 
 
     @property
     def title(self):
-        return self._showInfo["name"]
+        return self._show.title
 
 
     @property
@@ -95,8 +139,8 @@ class TvShow(Web):
     def season(self, season):
         if self._curSeason != season:
             self._curSeason = season
-            _info = self._showInfo["_embedded"]["episodes"]
-            self._season = { "{:0>2}".format(x["number"]):x["name"] for x in _info
+            info = self._epsInfo
+            self._season = { "{:0>2}".format(x["number"]):x["name"] for x in info
                              if "{:0>2}".format(x["season"]) == self._curSeason
                            }
 
@@ -104,7 +148,7 @@ class TvShow(Web):
 class Movie(Web):
     def __init__(self, movieTitle, movieYear):
         self.type = "movie"
-        self.url = [ "http://www.omdbapi.com/?r=json" ]
+        self.url = "http://www.omdbapi.com/?r=json"
         self._info = super().downloadData(movieTitle, year=movieYear)
 
 
