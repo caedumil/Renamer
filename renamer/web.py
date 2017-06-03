@@ -89,7 +89,7 @@ class TvShow(Web):
                                             title.upper(),
                                             entry["show"]["name"].upper())
 
-            if match.ratio() < 0.9:
+            if match.quick_ratio() < 0.9:
                 continue
 
             showsList.append(showCand(title = entry["show"]["name"],
