@@ -132,7 +132,7 @@ class TvShow(Web):
 
     @property
     def season(self):
-        return self._season
+        return self._curSeason
 
 
     @season.setter
@@ -143,6 +143,11 @@ class TvShow(Web):
             self._season = { "{:0>2}".format(x["number"]):x["name"] for x in info
                              if "{:0>2}".format(x["season"]) == self._curSeason
                            }
+
+
+    @property
+    def seasonEps(self):
+        return self._season
 
 
 class Movie(Web):

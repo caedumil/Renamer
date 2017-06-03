@@ -155,7 +155,7 @@ def main():
         serie = showEps[ep.title].title
         showEps[ep.title].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[ep.title].season[x] for x in ep.episodes ] )
+        title = "-".join( [ showEps[ep.title].seasonEps[x] for x in ep.episodes ] )
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)
