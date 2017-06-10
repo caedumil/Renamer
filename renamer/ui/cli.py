@@ -137,7 +137,7 @@ def main():
 
         except ( web.DownloadError, web.NotFoundError ) as err:
             logger.warn(err)
-            showFiles = [ x for x in showFiles if x.title != show ]
+            showFiles = [ x for x in showFiles if x.title != show[0] ]
 
 
     if showEps:
