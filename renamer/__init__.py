@@ -39,7 +39,7 @@ from renamer import web
 
 
 # Information
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __author__ = "Carlos Millett"
 __email__ = "carlos4735@gmail.com"
 __maintainer__ = "Carlos Millett"
