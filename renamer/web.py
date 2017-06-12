@@ -87,7 +87,7 @@ class TvShow(Web):
         match = difflib.SequenceMatcher(None, title.upper())
         for entry in showInfo:
             match.set_seq2(entry["show"]["name"].upper())
-            if match.quick_ratio() < 0.9:
+            if match.quick_ratio() < 0.85:
                 continue
 
             showsList.append(showCand(title = entry["show"]["name"],
