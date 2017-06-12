@@ -36,11 +36,11 @@ from renamer import __version__
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="renamer")
     parser.add_argument("-v",
                         "--version",
                         action="version",
-                        version=__version__)
+                        version="%(prog)s v{}".format(__version__))
     parser.add_argument("-y",
                         "--no-confirm",
                         action="store_true",
