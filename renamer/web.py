@@ -84,11 +84,9 @@ class TvShow(Web):
 
         showsList = []
         showCand = namedtuple("Show", ["title", "country", "premier", "link"])
+        match = difflib.SequenceMatcher(None, title.upper())
         for entry in showInfo:
-            match = difflib.SequenceMatcher(None,
-                                            title.upper(),
-                                            entry["show"]["name"].upper())
-
+            match.set_seq2(entry["show"]["name"].upper())
             if match.quick_ratio() < 0.9:
                 continue
 
@@ -114,6 +112,15 @@ class TvShow(Web):
 
         elif country:
             sel= [ x for x in showsList if country == x.country ]
+
+        elif len(showsList) > 1:
+            tmp = []
+            for entry in showsList:
+                match.set_seq2(entry.title.upper())
+                if match.quick_ratio() == 1:
+                    tmp.append(entry)
+
+            sel = tmp
 
         else:
             sel = showsList
