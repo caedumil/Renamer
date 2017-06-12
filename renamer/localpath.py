@@ -32,6 +32,7 @@ import re
 
 from shutil import move
 from itertools import zip_longest
+from hashlib import md5
 
 
 #
@@ -196,6 +197,7 @@ class SerieFile(LocalPath):
         self._show = super()._formatName(show)
         self.season = "{:0>2}".format(season)
         self.episodes = eps
+        self._hashID = None
 
 
     @property
@@ -211,6 +213,15 @@ class SerieFile(LocalPath):
     @property
     def year(self):
         return self._show.get("year")
+
+
+    @property
+    def hashID(self):
+        if not self._hashID:
+            tmp = [ x for x in self._show.values() if x ]
+            self._hashID = md5(bytes(".".join(tmp), "UTF-8")).hexdigest()
+
+        return self._hashID
 
 
 class MovieFile(LocalPath):

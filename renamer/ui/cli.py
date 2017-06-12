@@ -130,10 +130,10 @@ def main():
 
 
     showEps = {}
-    for show in set( (x.title, x.country, x.year) for x in showFiles ):
+    for show in set( (x.title, x.country, x.year, x.hashID) for x in showFiles ):
         try:
             logger.info("Downloading information for {0}.".format(show[0].upper()))
-            showEps[show[0]] = web.TvShow(show[0], show[1], show[2])
+            showEps[show[3]] = web.TvShow(show[0], show[1], show[2])
 
         except ( web.DownloadError, web.NotFoundError ) as err:
             logger.warn(err)
@@ -152,10 +152,10 @@ def main():
 
     logger.info("Setting new filename(s).")
     for ep in showFiles:
-        serie = showEps[ep.title].title
-        showEps[ep.title].season = ep.season
+        serie = showEps[ep.hashID].title
+        showEps[ep.hashID].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[ep.title].seasonEps[x] for x in ep.episodes ] )
+        title = "-".join( [ showEps[ep.hashID].seasonEps[x] for x in ep.episodes ] )
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)
