@@ -149,7 +149,7 @@ class LocalPath():
             match = reCountry.findall(name)[0]
 
             if match in countryCodes:
-                country = match
+                country = "GB" if match == "UK" else match
                 tmp = reCountry.sub("", name)
 
         if reYear.search(name):
