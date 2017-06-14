@@ -164,20 +164,20 @@ class LocalPath():
 class SerieFile(LocalPath):
     def __init__(self, filename):
         super().__init__(filename)
-        rSSEE = re.compile("\.S(\d{2})((E\d{2})+)\.", re.I)
-        rSSxEE = re.compile(" (\d{2})x(\d{2}) ")
-        rSEE = re.compile("\.(\d{4}.)?(\d{3,})\.")
+        rSceneRule = re.compile("[ .]S(\d{2})((E\d{2})+)[ .]", re.I)
+        rPreFormat = re.compile(" (\d{2})x(\d{2}) ")
+        rAltFormat = re.compile("\.(\d{4}.)?(\d{3,})\.")
 
-        if rSSEE.search(self.curFileName):
-            show, season, info = rSSEE.split(self.curFileName)[:3]
+        if rSceneRule.search(self.curFileName):
+            show, season, info = rSceneRule.split(self.curFileName)[:3]
             eps = re.findall("\d{2}", info)
 
-        elif rSSxEE.search(self.curFileName):
-            show, season, info = rSSxEE.split(self.curFileName)[:3]
+        elif rPreFormat.search(self.curFileName):
+            show, season, info = rPreFormat.split(self.curFileName)[:3]
             eps = re.findall("\d{2}", info)
 
-        elif rSEE.search(self.curFileName):
-            show, _, info = rSEE.split(self.curFileName)[:3]
+        elif rAltFormat.search(self.curFileName):
+            show, _, info = rAltFormat.split(self.curFileName)[:3]
 
             info_lst = list(info)
             info_lst.reverse()
