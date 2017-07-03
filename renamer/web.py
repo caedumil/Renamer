@@ -44,12 +44,12 @@ class Web():
     def downloadData(self, mediaTitle, **kwargs):
         saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
 
-        if self.type == "movie":
+        if isinstance(self, Movie):
             url = [ self.url ]
             url.extend([ "t={}".format(saneTitle), "y={}".format(kwargs["year"]) ])
             link = "&".join(url)
 
-        elif self.type == "tvshow":
+        elif isinstance(self, TvShow):
             if kwargs["action"] == "search":
                 url = [ self.url ]
                 url.extend([ "search", "q={}".format(saneTitle) ])
@@ -74,7 +74,6 @@ class Web():
 
 class TvShow(Web):
     def __init__(self, title, country=None, year=None):
-        self.type = "tvshow"
         self.url = "http://api.tvmaze.com/search/shows?"
         self._show = None
         self._season = None
@@ -159,7 +158,6 @@ class TvShow(Web):
 
 class Movie(Web):
     def __init__(self, movieTitle, movieYear):
-        self.type = "movie"
         self.url = "http://www.omdbapi.com/?r=json"
         self._info = super().downloadData(movieTitle, year=movieYear)
 
