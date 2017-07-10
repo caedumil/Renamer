@@ -89,11 +89,12 @@ class TvShow(Web):
             if match.quick_ratio() < 0.85:
                 continue
 
-            showsList.append(showCand(title = entry["show"]["name"],
-                                      country = entry["show"]["network"]["country"]["code"],
-                                      premier = entry["show"]["premiered"],
-                                      link = "{}/episodes".format(entry["show"]["_links"]["self"]["href"])
-                                     ))
+            newItem = showCand(title = entry["show"]["name"],
+                               country = entry["show"]["network"]["country"]["code"],
+                               premier = entry["show"]["premiered"],
+                               link = "{}/episodes".format(entry["show"]["_links"]["self"]["href"])
+                              )
+            showsList.append(newItem)
 
         if not showsList:
             strerror = "Could not find {}.".format(title.upper())
@@ -102,12 +103,14 @@ class TvShow(Web):
         showsList.sort(key=lambda x: x.premier, reverse=True)
 
         if year and country:
-            selYear = [ x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
+            selYear = [ x for x in showsList
+                        if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
             selCountry = [ x for x in showsList if country == x.country ]
             sel = list( filter( lambda x: x in selYear, selCountry ) )
 
         elif year:
-            sel= [ x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
+            sel= [ x for x in showsList
+                   if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
 
         elif country:
             sel= [ x for x in showsList if country == x.country ]
@@ -147,8 +150,7 @@ class TvShow(Web):
             self._curSeason = season
             info = self._epsInfo
             self._season = { "{:0>2}".format(x["number"]):x["name"] for x in info
-                             if "{:0>2}".format(x["season"]) == self._curSeason
-                           }
+                             if "{:0>2}".format(x["season"]) == self._curSeason }
 
 
     @property
