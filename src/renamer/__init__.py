@@ -33,9 +33,7 @@ the episode title.
 
 # Information
 __version__ = "0.2.1"
-__author__ = "Carlos Millett"
-__email__ = "carlos4735@gmail.com"
-__maintainer__ = "Carlos Millett"
+__author__ = "Carlos Millett <carlos4735@gmail.com>"
 
 
 #

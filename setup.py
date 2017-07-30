@@ -5,28 +5,32 @@
 #
 
 
-from setuptools import setup
+import os
 
-import renamer
+from setuptools import setup, find_packages
+
+
+def _read(fn):
+    path = os.path.join(os.path.dirname(__file__), fn)
+    return open(path).read()
 
 
 setup(
     name = "renamer",
-    version = renamer.__version__,
+    version = "0.2.1",
 
     description = "A utility to rename TV files.",
-    long_description = renamer.__doc__,
+    long_description = _read("README.md"),
     url = "https://github.com/caedus75/Renamer",
 
-    author = renamer.__author__,
-    author_email = renamer.__email__,
+    author = "Carlos Millett",
+    author_email = "carlos4735@gmail.com",
 
     license = "BSD",
 
-    packages = [
-        "renamer",
-        "renamer.ui"
-    ],
+    packages = find_packages("src"),
+
+    package_dir = {"" : "src"},
 
     entry_points = {
         "console_scripts": [
