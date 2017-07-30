@@ -45,7 +45,6 @@ class LocalPath():
         self.fileNameExt = os.path.splitext(filename)[-1]
         self._newFileName = None
 
-
     def rename(self):
         cur = os.path.join(self.dirName, self.curFileName)
         new = os.path.join(self.dirName, self._newFileName)
@@ -55,21 +54,17 @@ class LocalPath():
 
         move(cur, new)
 
-
     @property
     def newFileName(self):
-         return self._newFileName
-
+        return self._newFileName
 
     @newFileName.setter
     def newFileName(self, newName):
         new = self._sanitizeName(newName)
         self._newFileName = "{}{}".format(new, self.fileNameExt)
 
-
     def _sanitizeName(self, name):
-        table = {
-                 ord("á"): "a",
+        table = {ord("á"): "a",
                  ord("à"): "a",
                  ord("ã"): "a",
                  ord("â"): "a",
@@ -101,18 +96,15 @@ class LocalPath():
                  ord("/"): None,
                  ord("\\"): None,
                  ord("\""): None,
-                 ord("\'"): None
-                }
+                 ord("\'"): None}
 
         return name.translate(table)
-
 
     def _formatName(self, name):
         reSep = re.compile("[\W]+")
         reYear = re.compile("[12][0-9]{3}")
         reCountry = re.compile("[A-Z]{2}")
-        countryCodes = [
-                        "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ",
+        countryCodes = ["AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ",
                         "AR", "AS", "AT", "AU", "AW", "AX", "AZ", "BA", "BB",
                         "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BL", "BM",
                         "BN", "BO", "BQ", "BR", "BS", "BT", "BV", "BW", "BY",
@@ -137,10 +129,9 @@ class LocalPath():
                         "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR",
                         "SS", "ST", "SV", "SX", "SY", "SZ", "TC", "TD", "TF",
                         "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO", "TR",
-                        "TT",       "TW", "TZ", "UA", "UG", "UM", "US", "US",
-                        "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU",
-                        "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW"
-                       ]
+                        "TT", "TW", "TZ", "UA", "UG", "UM", "US", "US", "UY",
+                        "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF",
+                        "WS", "YE", "YT", "ZA", "ZM", "ZW"]
 
         nameOnly = country = year = None
         tmp = name
@@ -158,7 +149,7 @@ class LocalPath():
 
         nameOnly = reSep.sub(" ", reYear.sub("", tmp)).strip()
 
-        return { "title":nameOnly.title(), "country":country, "year":year }
+        return {"title": nameOnly.title(), "country": country, "year": year}
 
 
 class SerieFile(LocalPath):
@@ -181,14 +172,14 @@ class SerieFile(LocalPath):
 
             info_lst = list(info)
             info_lst.reverse()
-            info_itr = [ iter(info_lst) ] * 2
+            info_itr = [iter(info_lst)] * 2
             info_grp = zip_longest(*info_itr, fillvalue="0")
             info_lst = list(info_grp)
             s_num, s_dec = info_lst.pop()
             info_lst.reverse()
 
             season = "{}{}".format(s_dec, s_num)
-            eps = [ "{}{}".format(e_dec, e_num) for e_num, e_dec in info_lst ]
+            eps = ["{}{}".format(e_dec, e_num) for e_num, e_dec in info_lst]
 
         else:
             strerror = "Can't find show pattern for {}".format(self.curFileName)
@@ -199,26 +190,22 @@ class SerieFile(LocalPath):
         self.episodes = eps
         self._hashID = None
 
-
     @property
     def title(self):
         return self._show.get("title")
-
 
     @property
     def country(self):
         return self._show.get("country")
 
-
     @property
     def year(self):
         return self._show.get("year")
 
-
     @property
     def hashID(self):
         if not self._hashID:
-            tmp = [ x for x in self._show.values() if x ]
+            tmp = [x for x in self._show.values() if x]
             self._hashID = md5(bytes(".".join(tmp), "UTF-8")).hexdigest()
 
         return self._hashID
@@ -238,11 +225,9 @@ class MovieFile(LocalPath):
 
         self._movie = super()._formatName(movie)
 
-
     @property
     def title(self):
         return self._movie.get("title")
-
 
     @property
     def year(self):
@@ -254,6 +239,7 @@ class MovieFile(LocalPath):
 #
 class MatchNotFoundError(Exception):
     pass
+
 
 class SameFileError(Exception):
     pass

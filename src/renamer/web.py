@@ -45,14 +45,14 @@ class Web():
         saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
 
         if isinstance(self, Movie):
-            url = [ self.url ]
-            url.extend([ "t={}".format(saneTitle), "y={}".format(kwargs["year"]) ])
+            url = [self.url]
+            url.extend(["t={}".format(saneTitle), "y={}".format(kwargs["year"])])
             link = "&".join(url)
 
         elif isinstance(self, TvShow):
             if kwargs["action"] == "search":
-                url = [ self.url ]
-                url.extend([ "search", "q={}".format(saneTitle) ])
+                url = [self.url]
+                url.extend(["search", "q={}".format(saneTitle)])
                 link = "&".join(url)
 
             elif kwargs["action"] == "lookup":
@@ -61,7 +61,7 @@ class Web():
         try:
             down = urlRequest.urlopen(link)
             data = down.read()
-            text =  json.loads(data.decode("UTF-8"))
+            text = json.loads(data.decode("UTF-8"))
 
             if isinstance(text, dict) and text.get("Response") == "False":
                 raise NotFoundError("{} - {}".format(text["Error"], mediaTitle))
@@ -89,11 +89,10 @@ class TvShow(Web):
             if match.quick_ratio() < 0.85:
                 continue
 
-            newItem = showCand(title = entry["show"]["name"],
-                               country = entry["show"]["network"]["country"]["code"],
-                               premier = entry["show"]["premiered"],
-                               link = "{}/episodes".format(entry["show"]["_links"]["self"]["href"])
-                              )
+            newItem = showCand(title=entry["show"]["name"],
+                               country=entry["show"]["network"]["country"]["code"],
+                               premier=entry["show"]["premiered"],
+                               link="{}/episodes".format(entry["show"]["_links"]["self"]["href"]))
             showsList.append(newItem)
 
         if not showsList:
@@ -103,17 +102,17 @@ class TvShow(Web):
         showsList.sort(key=lambda x: x.premier, reverse=True)
 
         if year and country:
-            selYear = [ x for x in showsList
-                        if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
-            selCountry = [ x for x in showsList if country == x.country ]
-            sel = list( filter( lambda x: x in selYear, selCountry ) )
+            selYear = [x for x in showsList
+                       if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year]
+            selCountry = [x for x in showsList if country == x.country]
+            sel = list(filter(lambda x: x in selYear, selCountry))
 
         elif year:
-            sel= [ x for x in showsList
-                   if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year ]
+            sel = [x for x in showsList
+                   if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year]
 
         elif country:
-            sel= [ x for x in showsList if country == x.country ]
+            sel = [x for x in showsList if country == x.country]
 
         elif len(showsList) > 1:
             tmp = []
@@ -129,29 +128,24 @@ class TvShow(Web):
 
         self._show = sel.pop()
 
-
     def populate(self):
         self._epsInfo = super().downloadData(self._show.title, action="lookup")
-
 
     @property
     def title(self):
         return self._show.title
 
-
     @property
     def season(self):
         return self._curSeason
-
 
     @season.setter
     def season(self, season):
         if self._curSeason != season:
             self._curSeason = season
             info = self._epsInfo
-            self._season = { "{:0>2}".format(x["number"]):x["name"] for x in info
-                             if "{:0>2}".format(x["season"]) == self._curSeason }
-
+            self._season = {"{:0>2}".format(x["number"]): x["name"] for x in info
+                            if "{:0>2}".format(x["season"]) == self._curSeason}
 
     @property
     def seasonEps(self):
@@ -163,16 +157,13 @@ class Movie(Web):
         self.url = "http://www.omdbapi.com/?r=json"
         self._info = super().downloadData(movieTitle, year=movieYear)
 
-
     @property
     def title(self):
         return self._info["Title"]
 
-
     @property
     def year(self):
         return self._info["Year"]
-
 
     @property
     def IMDB(self):

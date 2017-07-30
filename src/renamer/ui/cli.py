@@ -66,7 +66,6 @@ def main():
                         help="FILE location.")
     args = parser.parse_args()
 
-
     logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
     logPath = os.path.join(logDir, "renamer.log")
     logLevel = getattr(logging, args.loglevel.upper(), None)
@@ -86,13 +85,12 @@ def main():
     logger.addHandler(consoleOut)
     logger.addHandler(fileOut)
 
-
     filesList = []
-    for path in [ os.path.abspath(x) for x in args.path if os.path.exists(x) ]:
+    for path in [os.path.abspath(x) for x in args.path if os.path.exists(x)]:
         if args.recursive and os.path.isdir(path):
             logger.info("Descending into {0}.".format(path))
             tmp = []
-            tree = [ (x, y) for x, _, y in os.walk(path) if y ]
+            tree = [(x, y) for x, _, y in os.walk(path) if y]
             for root, files in tree:
                 tmp.extend(map((lambda x: os.path.join(root, x)), files))
 
@@ -101,8 +99,8 @@ def main():
             tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
 
         else:
-            logger.info("Listing {0}.".format( path))
-            tmp = [ path ]
+            logger.info("Listing {0}.".format(path))
+            tmp = [path]
 
         filesList.extend(tmp)
 
@@ -110,8 +108,7 @@ def main():
         logger.error("No valid file(s) found.")
         sys.exit()
 
-    filesList =  [ x for x in filesList if not os.path.isdir(x) ]
-
+    filesList = [x for x in filesList if not os.path.isdir(x)]
 
     showFiles = []
     for entry in filesList:
@@ -123,22 +120,19 @@ def main():
         except localpath.MatchNotFoundError as err:
             logger.warn(err)
 
-
     if not showFiles:
         logger.error("No valid filename(s) found.")
         sys.exit()
 
-
     showEps = {}
-    for show in set( (x.title, x.country, x.year, x.hashID) for x in showFiles ):
+    for show in set((x.title, x.country, x.year, x.hashID) for x in showFiles):
         try:
             logger.info("Downloading information for {0}.".format(show[0].upper()))
             showEps[show[3]] = web.TvShow(show[0], show[1], show[2])
 
-        except ( web.DownloadError, web.NotFoundError ) as err:
+        except (web.DownloadError, web.NotFoundError) as err:
             logger.warn(err)
-            showFiles = [ x for x in showFiles if x.title != show[0] ]
-
+            showFiles = [x for x in showFiles if x.title != show[0]]
 
     if showEps:
         for show in showEps.values():
@@ -149,28 +143,24 @@ def main():
         logger.error("Could not download list of episodes for any show.")
         sys.exit()
 
-
     logger.info("Setting new filename(s).")
     for ep in showFiles:
         serie = showEps[ep.hashID].title
         showEps[ep.hashID].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join( [ showEps[ep.hashID].seasonEps[x] for x in ep.episodes ] )
+        title = "-".join([showEps[ep.hashID].seasonEps[x] for x in ep.episodes])
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)
-
 
     showFiles.sort(key=lambda x: x.newFileName)
     for i in showFiles:
         print("--- {0}\n+++ {1}".format(i.curFileName, i.newFileName))
 
-
     if not args.no_confirm:
         anws = input("Apply changes? [Y/n]: ")
         if anws in ["N", "n"]:
             sys.exit(1)
-
 
     for ep in showFiles:
         try:
