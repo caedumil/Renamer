@@ -1,5 +1,3 @@
-#/usr/bin/env python3
-
 #
 # A setuptools based setup module.
 #
@@ -16,31 +14,31 @@ def _read(fn):
 
 
 setup(
-    name = "renamer",
-    version = "0.2.1",
+    name="renamer",
+    version="0.2.1",
 
-    description = "A utility to rename TV files.",
-    long_description = _read("README.md"),
-    url = "https://github.com/caedus75/Renamer",
+    description="A utility to rename TV files.",
+    long_description=_read("README.md"),
+    url="https://github.com/caedus75/Renamer",
 
-    author = "Carlos Millett",
-    author_email = "carlos4735@gmail.com",
+    author="Carlos Millett",
+    author_email="carlos4735@gmail.com",
 
-    license = "BSD",
+    license="BSD",
 
-    packages = find_packages("src"),
+    packages=find_packages("src"),
 
-    package_dir = {"" : "src"},
+    package_dir={"": "src"},
 
-    entry_points = {
+    entry_points={
         "console_scripts": [
             "renamer = renamer.ui.cli:main",
         ],
     },
 
-    keywords = "utility rename tv show",
+    keywords="utility rename tv show",
 
-    classifiers = [
+    classifiers=[
         "Development Status :: 4 - Beta",
 
         "Intended Audience :: End Users/Desktop",
@@ -54,5 +52,5 @@ setup(
         "Programming Language :: Python :: 3.6",
     ],
 
-    python_requires = ">=3.4"
+    python_requires=">=3.4"
 )
