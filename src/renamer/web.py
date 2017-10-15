@@ -89,10 +89,16 @@ class TvShow(Web):
             if match.quick_ratio() < 0.85:
                 continue
 
-            newItem = showCand(title=entry["show"]["name"],
-                               country=entry["show"]["network"]["country"]["code"],
-                               premier=entry["show"]["premiered"],
-                               link="{}/episodes".format(entry["show"]["_links"]["self"]["href"]))
+            network = entry["show"]["network"]
+            webchannel = entry["show"]["webChannel"]
+            countryCode = network if network else webchannel
+
+            newItem = showCand(
+                title=entry["show"]["name"],
+                country=countryCode["country"]["code"],
+                premier=entry["show"]["premiered"],
+                link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
+            )
             showsList.append(newItem)
 
         if not showsList:
