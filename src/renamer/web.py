@@ -84,7 +84,7 @@ class TvShow(Web):
         showsList = []
         showCand = namedtuple("Show", ["title", "country", "premier", "link"])
         match = difflib.SequenceMatcher(None, title.upper())
-        for entry in showInfo:
+        for entry in [x for x in showInfo if x["show"]["premiered"]]:
             match.set_seq2(entry["show"]["name"].upper())
             if match.quick_ratio() < 0.85:
                 continue
