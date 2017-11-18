@@ -93,9 +93,11 @@ class TvShow(Web):
             webchannel = entry["show"]["webChannel"]
             countryCode = network if network else webchannel
 
+            country = countryCode["country"]["code"] if countryCode["country"] else None
+
             newItem = showCand(
                 title=entry["show"]["name"],
-                country=countryCode["country"]["code"],
+                country=country,
                 premier=entry["show"]["premiered"],
                 link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
             )
