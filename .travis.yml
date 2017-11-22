@@ -7,10 +7,13 @@ python:
     - "3.6"
 install:
     - pip install flake8
+    - pip install pytest
     - pip install .
-script:
+before_script:
     - flake8 . --show-source --select=E901,E999,F821,F822,F823
     - flake8 . --exit-zero
+script:
+    - pytest --capture=sys
 notifications:
     on_success: never
     on_failure: change
