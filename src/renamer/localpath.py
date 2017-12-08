@@ -155,8 +155,8 @@ class LocalPath():
 class SerieFile(LocalPath):
     def __init__(self, filename):
         super().__init__(filename)
-        rSceneRule = re.compile("[ .]S(\d{2})((E\d{2})+)[ .]", re.I)
-        rPreFormat = re.compile(" (\d{2})x(\d{2}) ")
+        rSceneRule = re.compile("[ .]S(\d{2})((E\d{2}-?)+)[ .]", re.I)
+        rPreFormat = re.compile(" (\d{2})x((\d{2}-?)+) ")
         rAltFormat = re.compile("\.(\d{4}.)?(\d{3,})\.")
 
         if rSceneRule.search(self.curFileName):
