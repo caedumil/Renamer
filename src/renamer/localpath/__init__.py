@@ -34,6 +34,8 @@ from shutil import move
 from itertools import zip_longest
 from hashlib import md5
 
+from . import error
+
 
 #
 # Class
@@ -50,7 +52,7 @@ class LocalPath():
         new = os.path.join(self.dirName, self._newFileName)
 
         if cur == new:
-            raise SameFileError("{} and {} are the same file.".format(cur, new))
+            raise error.SameFileError("{} and {} are the same file.".format(cur, new))
 
         move(cur, new)
 
@@ -183,7 +185,7 @@ class SerieFile(LocalPath):
 
         else:
             strerror = "Can't find show pattern for {}".format(self.curFileName)
-            raise MatchNotFoundError(strerror)
+            raise error.MatchNotFoundError(strerror)
 
         self._show = super()._formatName(show)
         self.season = "{:0>2}".format(season)
@@ -209,14 +211,3 @@ class SerieFile(LocalPath):
             self._hashID = md5(bytes(".".join(tmp), "UTF-8")).hexdigest()
 
         return self._hashID
-
-
-#
-# Exception
-#
-class MatchNotFoundError(Exception):
-    pass
-
-
-class SameFileError(Exception):
-    pass

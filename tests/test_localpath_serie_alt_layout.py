@@ -65,5 +65,5 @@ def broken_test_serie_alt_full():
 
 def test_serie_alt_error():
     name = '125.foo.bar.ext'
-    with pytest.raises(localpath.MatchNotFoundError):
+    with pytest.raises(localpath.error.MatchNotFoundError):
         localpath.SerieFile(name)

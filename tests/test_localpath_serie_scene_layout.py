@@ -65,5 +65,5 @@ def test_serie_scene_full():
 
 def test_serie_scene_error():
     name = 'S01E25.FOO.BAR.ext'
-    with pytest.raises(localpath.MatchNotFoundError):
+    with pytest.raises(localpath.error.MatchNotFoundError):
         localpath.SerieFile(name)

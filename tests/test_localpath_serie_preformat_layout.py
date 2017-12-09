@@ -65,5 +65,5 @@ def test_serie_preformat_full():
 
 def test_serie_preformat_error():
     name = '01x25 - Full Name.ext'
-    with pytest.raises(localpath.MatchNotFoundError):
+    with pytest.raises(localpath.error.MatchNotFoundError):
         localpath.SerieFile(name)

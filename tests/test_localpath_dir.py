@@ -15,5 +15,5 @@ def test_samefile_error():
     name = '/some/path/Some.Show.S01E05.FOO.BAR.ext'
     test = localpath.LocalPath(name)
     test.newFileName = 'Some.Show.S01E05.FOO.BAR'
-    with pytest.raises(localpath.SameFileError):
+    with pytest.raises(localpath.error.SameFileError):
         test.rename()
