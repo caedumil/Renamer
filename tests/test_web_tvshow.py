@@ -45,5 +45,5 @@ def test_tvshow_full():
 
 def test_tvshow_error():
     name = 'Wrong Name'
-    with pytest.raises(web.NotFoundError):
+    with pytest.raises(web.error.NotFoundError):
         web.TvShow(name)

@@ -36,13 +36,15 @@ from urllib import request as urlRequest
 from urllib import error as urlerr
 from collections import namedtuple
 
+from . import error
+
 
 #
 # Class
 #
 class Web():
     def downloadData(self, mediaTitle, **kwargs):
-        saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
+        saneTitle = (lambda x: re.sub("\W", "+", x))(mediaTitle)
 
         if kwargs["action"] == "search":
             url = [self.url]
@@ -54,16 +56,14 @@ class Web():
 
         try:
             down = urlRequest.urlopen(link)
-            data = down.read()
-            text = json.loads(data.decode("UTF-8"))
-
-            if isinstance(text, dict) and text.get("Response") == "False":
-                raise NotFoundError("{} - {}".format(text["Error"], mediaTitle))
-
-            return text
 
         except urlerr.URLError:
-            raise DownloadError("Failed to fetch data for {}".format(mediaTitle))
+            raise error.DownloadError("Failed to fetch data for {}".format(mediaTitle))
+
+        else:
+            data = down.read()
+            text = json.loads(data.decode("UTF-8"))
+            return text
 
 
 class TvShow(Web):
@@ -98,7 +98,7 @@ class TvShow(Web):
 
         if not showsList:
             strerror = "Could not find {}.".format(title.upper())
-            raise NotFoundError(strerror)
+            raise error.NotFoundError(strerror)
 
         showsList.sort(key=lambda x: x.premier, reverse=True)
 
@@ -151,14 +151,3 @@ class TvShow(Web):
     @property
     def seasonEps(self):
         return self._season
-
-
-#
-# Exception
-#
-class DownloadError(Exception):
-    pass
-
-
-class NotFoundError(Exception):
-    pass
