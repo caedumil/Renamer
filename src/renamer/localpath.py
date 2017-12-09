@@ -211,29 +211,6 @@ class SerieFile(LocalPath):
         return self._hashID
 
 
-class MovieFile(LocalPath):
-    def __init__(self, filename):
-        super().__init__(filename)
-        regex = re.compile("([a-z0-9.-]+).([12][0-9]{3})", re.I)
-
-        if not regex.search(self.curFileName):
-            strerror = "Can't find movie pattern for {}".format(self.curFileName)
-            raise MatchNotFoundError(strerror)
-
-        splitName = regex.findall(self.curFileName)
-        movie, _ = splitName[0]
-
-        self._movie = super()._formatName(movie)
-
-    @property
-    def title(self):
-        return self._movie.get("title")
-
-    @property
-    def year(self):
-        return self._movie.get("year")
-
-
 #
 # Exception
 #

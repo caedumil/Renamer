@@ -44,19 +44,13 @@ class Web():
     def downloadData(self, mediaTitle, **kwargs):
         saneTitle = (lambda x: re.sub("\W+", "+", x))(mediaTitle)
 
-        if isinstance(self, Movie):
+        if kwargs["action"] == "search":
             url = [self.url]
-            url.extend(["t={}".format(saneTitle), "y={}".format(kwargs["year"])])
+            url.extend(["search", "q={}".format(saneTitle)])
             link = "&".join(url)
 
-        elif isinstance(self, TvShow):
-            if kwargs["action"] == "search":
-                url = [self.url]
-                url.extend(["search", "q={}".format(saneTitle)])
-                link = "&".join(url)
-
-            elif kwargs["action"] == "lookup":
-                link = self._show.link
+        elif kwargs["action"] == "lookup":
+            link = self._show.link
 
         try:
             down = urlRequest.urlopen(link)
@@ -157,24 +151,6 @@ class TvShow(Web):
     @property
     def seasonEps(self):
         return self._season
-
-
-class Movie(Web):
-    def __init__(self, movieTitle, movieYear):
-        self.url = "http://www.omdbapi.com/?r=json"
-        self._info = super().downloadData(movieTitle, year=movieYear)
-
-    @property
-    def title(self):
-        return self._info["Title"]
-
-    @property
-    def year(self):
-        return self._info["Year"]
-
-    @property
-    def IMDB(self):
-        return self._info["imdbID"]
 
 
 #
