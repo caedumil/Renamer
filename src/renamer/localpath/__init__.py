@@ -30,9 +30,8 @@
 import os
 import re
 
-from shutil import move
 from itertools import zip_longest
-from hashlib import md5
+from shutil import move
 
 from . import error
 
@@ -42,19 +41,22 @@ from . import error
 #
 class LocalPath():
     def __init__(self, filename):
-        self.dirName = os.path.dirname(filename)
-        self.curFileName = os.path.basename(filename)
-        self.fileNameExt = os.path.splitext(filename)[-1]
+        self._curFileName = os.path.basename(filename)
+        self._dirName = os.path.dirname(filename)
+        self._fileNameExt = os.path.splitext(filename)[-1]
         self._newFileName = None
 
-    def rename(self):
-        cur = os.path.join(self.dirName, self.curFileName)
-        new = os.path.join(self.dirName, self._newFileName)
+    @property
+    def curFileName(self):
+        return self._curFileName
 
-        if cur == new:
-            raise error.SameFileError("{} and {} are the same file.".format(cur, new))
+    @property
+    def dirName(self):
+        return self._dirName
 
-        move(cur, new)
+    @property
+    def fileNameExt(self):
+        return self._fileNameExt
 
     @property
     def newFileName(self):
@@ -65,75 +67,80 @@ class LocalPath():
         new = self._sanitizeName(newName)
         self._newFileName = "{}{}".format(new, self.fileNameExt)
 
-    def _sanitizeName(self, name):
-        table = {ord("á"): "a",
-                 ord("à"): "a",
-                 ord("ã"): "a",
-                 ord("â"): "a",
-                 ord("é"): "e",
-                 ord("è"): "e",
-                 ord("ẽ"): "e",
-                 ord("ê"): "e",
-                 ord("í"): "i",
-                 ord("ì"): "i",
-                 ord("ĩ"): "i",
-                 ord("î"): "i",
-                 ord("ó"): "o",
-                 ord("ò"): "o",
-                 ord("õ"): "o",
-                 ord("ô"): "o",
-                 ord("ú"): "u",
-                 ord("ù"): "u",
-                 ord("ũ"): "u",
-                 ord("û"): "u",
-                 ord("ç"): "c",
-                 ord("ñ"): "n",
-                 ord(":"): " -",
-                 ord(">"): None,
-                 ord("<"): None,
-                 ord("?"): None,
-                 ord("!"): None,
-                 ord("*"): None,
-                 ord("#"): None,
-                 ord("/"): None,
-                 ord("\\"): None,
-                 ord("\""): None,
-                 ord("\'"): None}
+    def rename(self):
+        cur = os.path.join(self.dirName, self.curFileName)
+        new = os.path.join(self.dirName, self._newFileName)
+        if cur == new:
+            raise error.SameFileError("{} and {} are the same file.".format(cur, new))
+        move(cur, new)
 
+    def _sanitizeName(self, name):
+        table = {
+            ord("á"): "a",
+            ord("à"): "a",
+            ord("ã"): "a",
+            ord("â"): "a",
+            ord("é"): "e",
+            ord("è"): "e",
+            ord("ẽ"): "e",
+            ord("ê"): "e",
+            ord("í"): "i",
+            ord("ì"): "i",
+            ord("ĩ"): "i",
+            ord("î"): "i",
+            ord("ó"): "o",
+            ord("ò"): "o",
+            ord("õ"): "o",
+            ord("ô"): "o",
+            ord("ú"): "u",
+            ord("ù"): "u",
+            ord("ũ"): "u",
+            ord("û"): "u",
+            ord("ç"): "c",
+            ord("ñ"): "n",
+            ord(":"): " -",
+            ord(">"): None,
+            ord("<"): None,
+            ord("?"): None,
+            ord("!"): None,
+            ord("*"): None,
+            ord("#"): None,
+            ord("/"): None,
+            ord("\\"): None,
+            ord("\""): None,
+            ord("\'"): None
+        }
         return name.translate(table)
 
     def _formatName(self, name):
         reSep = re.compile("[\W]+")
         reYear = re.compile("[12][0-9]{3}")
         reCountry = re.compile("[A-Z]{2}")
-        countryCodes = ["AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ",
-                        "AR", "AS", "AT", "AU", "AW", "AX", "AZ", "BA", "BB",
-                        "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BL", "BM",
-                        "BN", "BO", "BQ", "BR", "BS", "BT", "BV", "BW", "BY",
-                        "BZ", "CA", "CC", "CD", "CF", "CG", "CH", "CI", "CK",
-                        "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX",
-                        "CY", "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC",
-                        "EE", "EG", "EH", "ER", "ES", "ET", "FI", "FJ", "FK",
-                        "FM", "FO", "FR", "GA", "UK", "GD", "GE", "GF", "GG",
-                        "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GS",
-                        "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT",
-                        "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IR",
-                        "IS", "IT", "JE", "JM", "JO", "JP", "KE", "KG", "KH",
-                        "KI", "KM", "KN", "KP", "KR", "KW", "KY", "KZ", "LA",
-                        "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV",
-                        "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH", "MK",
-                        "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS", "MT",
-                        "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE",
-                        "NF", "NG", "NI", "NL", "NO", "NP", "NR", "NU", "NZ",
-                        "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM",
-                        "PN", "PR", "PS", "PT", "PW", "PY", "QA", "RE", "RO",
-                        "RS", "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG",
-                        "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR",
-                        "SS", "ST", "SV", "SX", "SY", "SZ", "TC", "TD", "TF",
-                        "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO", "TR",
-                        "TT", "TW", "TZ", "UA", "UG", "UM", "US", "US", "UY",
-                        "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF",
-                        "WS", "YE", "YT", "ZA", "ZM", "ZW"]
+        countryCodes = [
+            "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
+            "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG",
+            "BH", "BI", "BJ", "BL", "BM", "BN", "BO", "BQ", "BR", "BS", "BT",
+            "BV", "BW", "BY", "BZ", "CA", "CC", "CD", "CF", "CG", "CH", "CI",
+            "CK", "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX", "CY",
+            "CZ", "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG", "EH",
+            "ER", "ES", "ET", "FI", "FJ", "FK", "FM", "FO", "FR", "GA", "UK",
+            "GD", "GE", "GF", "GG", "GH", "GI", "GL", "GM", "GN", "GP", "GQ",
+            "GR", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR", "HT",
+            "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IR", "IS", "IT",
+            "JE", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN", "KP",
+            "KR", "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LR", "LS",
+            "LT", "LU", "LV", "LY", "MA", "MC", "MD", "ME", "MF", "MG", "MH",
+            "MK", "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU",
+            "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI",
+            "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG",
+            "PH", "PK", "PL", "PM", "PN", "PR", "PS", "PT", "PW", "PY", "QA",
+            "RE", "RO", "RS", "RU", "RW", "SA", "SB", "SC", "SD", "SE", "SG",
+            "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST",
+            "SV", "SX", "SY", "SZ", "TC", "TD", "TF", "TG", "TH", "TJ", "TK",
+            "TL", "TM", "TN", "TO", "TR", "TT", "TW", "TZ", "UA", "UG", "UM",
+            "US", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU",
+            "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW"
+        ]
 
         nameOnly = country = year = None
         tmp = name
@@ -150,8 +157,11 @@ class LocalPath():
             year = match[0]
 
         nameOnly = reSep.sub(" ", reYear.sub("", tmp)).strip()
-
-        return {"title": nameOnly.title(), "country": country, "year": year}
+        return {
+            "title": nameOnly.title(),
+            "country": country,
+            "year": year
+        }
 
 
 class SerieFile(LocalPath):
@@ -188,26 +198,38 @@ class SerieFile(LocalPath):
             raise error.MatchNotFoundError(strerror)
 
         self._show = super()._formatName(show)
-        self.season = "{:0>2}".format(season)
-        self.episodes = eps
-        self._hashID = None
+        self._show["season"] = "{:0>2}".format(season)
+        self._show["episodes"] = eps
+        self._identifier = None
 
-    @property
-    def title(self):
-        return self._show.get("title")
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.identifier == other.identifier
+        return False
 
     @property
     def country(self):
         return self._show.get("country")
 
     @property
+    def episodes(self):
+        return self._show.get("episodes")
+
+    @property
+    def season(self):
+        return self._show.get("season")
+
+    @property
+    def title(self):
+        return self._show.get("title")
+
+    @property
     def year(self):
         return self._show.get("year")
 
     @property
-    def hashID(self):
-        if not self._hashID:
-            tmp = [x for x in self._show.values() if x]
-            self._hashID = md5(bytes(".".join(tmp), "UTF-8")).hexdigest()
-
-        return self._hashID
+    def identifier(self):
+        if not self._identifier:
+            identifier = re.sub("\W", "", self._show["title"])
+            self._identifier = identifier.upper()
+        return self._identifier

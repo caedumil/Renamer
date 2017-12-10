@@ -28,8 +28,8 @@
 # Exception
 #
 class MatchNotFoundError(Exception):
-    pass
+    '''Raise when show title, season or episodes can't be detected.'''
 
 
 class SameFileError(Exception):
-    pass
+    '''Raise when current filename and new filename are the same.'''
