@@ -28,8 +28,8 @@
 # Exception
 #
 class DownloadError(Exception):
-    pass
+    '''Raise when page cannot be downloaded.'''
 
 
 class NotFoundError(Exception):
-    pass
+    '''Raise when show can't be found in the remote database.'''

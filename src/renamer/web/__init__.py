@@ -29,12 +29,12 @@
 #
 import re
 import json
-import difflib
 import time
+import difflib
 
-from urllib import request as urlRequest
-from urllib import error as urlerr
 from collections import namedtuple
+from urllib import error as urlerr
+from urllib import request as urlRequest
 
 from . import error
 
@@ -43,27 +43,28 @@ from . import error
 # Class
 #
 class Web():
-    def downloadData(self, mediaTitle, **kwargs):
-        saneTitle = (lambda x: re.sub("\W", "+", x))(mediaTitle)
-
-        if kwargs["action"] == "search":
-            url = [self.url]
-            url.extend(["search", "q={}".format(saneTitle)])
-            link = "&".join(url)
-
-        elif kwargs["action"] == "lookup":
-            link = self._show.link
-
+    def _downloadData(self, link):
         try:
             down = urlRequest.urlopen(link)
 
         except urlerr.URLError:
-            raise error.DownloadError("Failed to fetch data for {}".format(mediaTitle))
+            raise error.DownloadError("Failed to fetch data.")
 
         else:
             data = down.read()
             text = json.loads(data.decode("UTF-8"))
             return text
+
+    def searchShow(self, title):
+        saneTitle = (lambda x: re.sub("\W", "+", x))(title)
+        url = [self.url]
+        url.extend(["search", "q={}".format(saneTitle)])
+        link = "&".join(url)
+        return self._downloadData(link)
+
+    def lookupShow(self):
+        link = self._show.link
+        return self._downloadData(link)
 
 
 class TvShow(Web):
@@ -73,68 +74,71 @@ class TvShow(Web):
         self._season = None
         self._curSeason = None
 
-        showInfo = super().downloadData(title, action="search")
+        showsList = self._findShow(title)
+        if not showsList:
+            strerror = "Could not find {}.".format(title.upper())
+            raise error.NotFoundError(strerror)
+        self._show = self._selectShow(showsList, country, year)
 
+    def _findShow(self, title):
+        showCand = namedtuple("Show", ["title", "country", "premier", "thetvdb", "link"])
         showsList = []
-        showCand = namedtuple("Show", ["title", "country", "premier", "link"])
-        match = difflib.SequenceMatcher(None, title.upper())
+        genID = (lambda x: re.sub("\W", "", x.upper()))
+
+        match = difflib.SequenceMatcher(None, genID(title))
+        showInfo = self.searchShow(title)
         for entry in [x for x in showInfo if x["show"]["premiered"]]:
-            match.set_seq2(entry["show"]["name"].upper())
-            if match.quick_ratio() < 0.85:
+            match.set_seq2(genID(entry["show"]["name"]))
+            if match.quick_ratio() < 0.95:
                 continue
 
             network = entry["show"]["network"]
             webchannel = entry["show"]["webChannel"]
-            countryCode = network if network else webchannel
-            _country = countryCode["country"]["code"] if countryCode["country"] else None
+            showProvider = network if network else webchannel
+            countryCode = showProvider["country"]["code"] if showProvider["country"] else None
 
             newItem = showCand(
                 title=entry["show"]["name"],
-                country=_country,
+                country=countryCode,
                 premier=entry["show"]["premiered"],
+                thetvdb=entry["show"]["externals"]["thetvdb"],
                 link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
             )
             showsList.append(newItem)
+        return showsList
 
-        if not showsList:
-            strerror = "Could not find {}.".format(title.upper())
-            raise error.NotFoundError(strerror)
-
+    def _selectShow(self, showsList, country, year):
         showsList.sort(key=lambda x: x.premier, reverse=True)
-
         if year and country:
-            selYear = [x for x in showsList
-                       if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year]
+            selYear = [
+                x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year
+            ]
             selCountry = [x for x in showsList if country == x.country]
             sel = list(filter(lambda x: x in selYear, selCountry))
 
         elif year:
-            sel = [x for x in showsList
-                   if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year]
+            sel = [
+                x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year
+            ]
 
         elif country:
             sel = [x for x in showsList if country == x.country]
 
-        elif len(showsList) > 1:
-            tmp = []
-            for entry in showsList:
-                match.set_seq2(entry.title.upper())
-                if match.quick_ratio() == 1:
-                    tmp.append(entry)
-
-            sel = tmp
-
         else:
             sel = showsList
 
-        self._show = sel.pop()
+        return sel.pop()
 
     def populate(self):
-        self._epsInfo = super().downloadData(self._show.title, action="lookup")
+        self._epsInfo = self.lookupShow()
 
     @property
     def title(self):
         return self._show.title
+
+    @property
+    def thetvdb(self):
+        return self._show.thetvdb
 
     @property
     def season(self):
@@ -144,9 +148,10 @@ class TvShow(Web):
     def season(self, season):
         if self._curSeason != season:
             self._curSeason = season
-            info = self._epsInfo
-            self._season = {"{:0>2}".format(x["number"]): x["name"] for x in info
-                            if "{:0>2}".format(x["season"]) == self._curSeason}
+            self._season = {
+                "{:0>2}".format(x["number"]): x["name"]
+                for x in self._epsInfo if "{:0>2}".format(x["season"]) == self._curSeason
+            }
 
     @property
     def seasonEps(self):
