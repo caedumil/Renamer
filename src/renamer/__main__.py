@@ -26,64 +26,18 @@
 
 import os
 import sys
-import logging
-import argparse
-import platform
 
+from renamer import cli
 from renamer import web
+from renamer import logging
 from renamer import localpath
-from renamer import __version__
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="renamer")
-    parser.add_argument("-v",
-                        "--version",
-                        action="version",
-                        version="%(prog)s v{}".format(__version__))
-    parser.add_argument("-y",
-                        "--no-confirm",
-                        action="store_true",
-                        help="Do not ask for confirmation.")
-    parser.add_argument("-s",
-                        "--simple",
-                        action="store_true",
-                        help="Omit show title from filename.")
-    parser.add_argument("-r",
-                        "--recursive",
-                        action="store_true",
-                        help="Recursively descend into directories.")
-    parser.add_argument("-l",
-                        "--loglevel",
-                        metavar="LEVEL",
-                        default="INFO",
-                        type=str,
-                        help="Set log level (INFO, WARN, ERROR).")
-    parser.add_argument("path",
-                        type=str,
-                        metavar="FILE",
-                        nargs="+",
-                        help="FILE location.")
+    parser = cli.setParser()
     args = parser.parse_args()
 
-    logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
-    logPath = os.path.join(logDir, "renamer.log")
-    logLevel = getattr(logging, args.loglevel.upper(), None)
-
-    consoleOut = logging.StreamHandler()
-    consoleFormat = logging.Formatter("%(levelname)s - %(message)s")
-    consoleOut.setLevel(logging.INFO)
-    consoleOut.setFormatter(consoleFormat)
-
-    fileOut = logging.FileHandler(logPath, mode="w")
-    fileFormat = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
-    fileOut.setLevel(logging.WARN)
-    fileOut.setFormatter(fileFormat)
-
-    logger = logging.getLogger("renamer")
-    logger.setLevel(logLevel)
-    logger.addHandler(consoleOut)
-    logger.addHandler(fileOut)
+    logger = logging.setLogger(args.loglevel)
 
     filesList = []
     for path in [os.path.abspath(x) for x in args.path if os.path.exists(x)]:
@@ -117,7 +71,7 @@ def main():
             fileObj = localpath.SerieFile(entry)
             showFiles.append(fileObj)
 
-        except localpath.MatchNotFoundError as err:
+        except localpath.error.MatchNotFoundError as err:
             logger.warn(err)
 
     if not showFiles:
@@ -125,12 +79,12 @@ def main():
         sys.exit()
 
     showEps = {}
-    for show in set((x.title, x.country, x.year, x.hashID) for x in showFiles):
+    for show in set((x.title, x.country, x.year, x.identifier) for x in showFiles):
         try:
             logger.info("Downloading information for {0}.".format(show[0].upper()))
             showEps[show[3]] = web.TvShow(show[0], show[1], show[2])
 
-        except (web.DownloadError, web.NotFoundError) as err:
+        except (web.error.DownloadError, web.error.NotFoundError) as err:
             logger.warn(err)
             showFiles = [x for x in showFiles if x.title != show[0]]
 
@@ -145,10 +99,10 @@ def main():
 
     logger.info("Setting new filename(s).")
     for ep in showFiles:
-        serie = showEps[ep.hashID].title
-        showEps[ep.hashID].season = ep.season
+        serie = showEps[ep.identifier].title
+        showEps[ep.identifier].season = ep.season
         episode = "-".join(ep.episodes)
-        title = "-".join([showEps[ep.hashID].seasonEps[x] for x in ep.episodes])
+        title = "-".join([showEps[ep.identifier].seasonEps[x] for x in ep.episodes])
         newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
 
         ep.newFileName = newFileName.format(serie, ep.season, episode, title)
@@ -166,7 +120,7 @@ def main():
         try:
             ep.rename()
 
-        except localpath.SameFileError as err:
+        except localpath.error.SameFileError as err:
             logger.warn(err)
 
         except PermissionError as err:

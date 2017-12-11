@@ -32,7 +32,7 @@ setup(
 
     entry_points={
         "console_scripts": [
-            "renamer = renamer.ui.cli:main",
+            "renamer = renamer.__main__:main",
         ],
     },
 
