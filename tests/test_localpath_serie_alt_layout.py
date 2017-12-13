@@ -1,11 +1,11 @@
 import pytest
 
-from renamer import localpath
+from renamer.localpath import types, error
 
 
 def test_serie_alt_simple():
     name = 'some.show.125.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == 'Some Show'
     assert test.country is None
     assert test.year is None
@@ -15,7 +15,7 @@ def test_serie_alt_simple():
 
 def test_serie_alt_numbers():
     name = '11.22.33.125.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == '11 22 33'
     assert test.country is None
     assert test.year is None
@@ -25,7 +25,7 @@ def test_serie_alt_numbers():
 
 def broken_test_serie_alt_with_year():
     name = 'some.show.2017.125.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == 'Some Show'
     assert test.country is None
     assert test.year == '2017'
@@ -35,7 +35,7 @@ def broken_test_serie_alt_with_year():
 
 def broken_test_serie_alt_with_country():
     name = 'some.show.us.125.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == 'Some Show'
     assert test.country == 'US'
     assert test.year is None
@@ -45,7 +45,7 @@ def broken_test_serie_alt_with_country():
 
 def test_serie_alt_multiple_eps():
     name = 'some.show.12425.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == 'Some Show'
     assert test.country is None
     assert test.year is None
@@ -55,7 +55,7 @@ def test_serie_alt_multiple_eps():
 
 def broken_test_serie_alt_full():
     name = 'some.show.us.2017.12425.foo.bar.ext'
-    test = localpath.SerieFile(name)
+    test = types.SerieFile(name)
     assert test.title == 'Some Show'
     assert test.country == 'US'
     assert test.year == '2017'
@@ -65,5 +65,5 @@ def broken_test_serie_alt_full():
 
 def test_serie_alt_error():
     name = '125.foo.bar.ext'
-    with pytest.raises(localpath.error.MatchNotFoundError):
-        localpath.SerieFile(name)
+    with pytest.raises(error.MatchNotFoundError):
+        types.SerieFile(name)
