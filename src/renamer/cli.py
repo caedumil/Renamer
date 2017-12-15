@@ -1,8 +1,21 @@
+# Copyright (c) 2014 - 2017, Carlos Millett
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the Simplified BSD License.  See the LICENSE file for details.
+
+
+#
+# Import
+#
 import argparse
 
 from renamer import __version__
 
 
+#
+# Function
+#
 def setParser():
     parser = argparse.ArgumentParser(prog="renamer")
     parser.add_argument(

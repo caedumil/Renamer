@@ -1,12 +1,27 @@
+# Copyright (c) 2014 - 2017, Carlos Millett
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the Simplified BSD License.  See the LICENSE file for details.
+
+#
+# Import
+#
 import os
 import logging
 
 from . import types, error
 
 
+#
+# Global var
+#
 logger = logging.getLogger("Files")
 
 
+#
+# Function
+#
 def traversePath(path, recursive):
     filesList = []
     for path in [os.path.abspath(x) for x in path if os.path.exists(x)]:
