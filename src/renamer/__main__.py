@@ -25,96 +25,86 @@
 
 
 import os
-import sys
+import logging
+import platform
 
 from renamer import cli
 from renamer import web
-from renamer import logging
 from renamer import localpath
+
+
+def setupLogger(loglevel):
+    consoleOut = logging.StreamHandler()
+    consoleFormat = logging.Formatter("%(levelname)s - %(message)s")
+    consoleOut.setLevel(logging.INFO)
+    consoleOut.setFormatter(consoleFormat)
+
+    logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
+    logPath = os.path.join(logDir, "renamer.log")
+    logLevel = getattr(logging, loglevel.upper(), None)
+    fileOut = logging.FileHandler(logPath, mode="w")
+    fileFormat = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
+    fileOut.setLevel(logging.WARN)
+    fileOut.setFormatter(fileFormat)
+
+    logger = logging.getLogger("Renamer")
+    logger.setLevel(logLevel)
+    logger.addHandler(consoleOut)
+    logger.addHandler(fileOut)
+
+    return logger
+
+
+def buildNewFileNames(showFiles, showInfo, short=False):
+    for ep in showFiles:
+        serie = showInfo[ep.identifier].title
+        showInfo[ep.identifier].season = ep.season
+        episode = "-".join(ep.episodes)
+        title = "-".join([showInfo[ep.identifier].seasonEps[x] for x in ep.episodes])
+        newFileName = "{1}x{2} - {3}" if short else "{0} - {1}x{2} - {3}"
+        ep.newFileName = newFileName.format(serie, ep.season, episode, title)
+
+
+def askApplyChanges(no_confirmation):
+    if not no_confirmation:
+        anws = input("Apply changes? [Y/n]: ")
+        if anws in ["N", "n"]:
+            return False
+    return True
 
 
 def main():
     parser = cli.setParser()
     args = parser.parse_args()
+    logger = setupLogger(args.loglevel)
 
-    logger = logging.setLogger(args.loglevel)
+    try:
+        showFiles = localpath.genFilesList(args.path, args.recursive)
+        showInfo = web.genShowsDict(showFiles)
 
-    filesList = []
-    for path in [os.path.abspath(x) for x in args.path if os.path.exists(x)]:
-        if args.recursive and os.path.isdir(path):
-            logger.info("Descending into {0}.".format(path))
-            tmp = []
-            tree = [(x, y) for x, _, y in os.walk(path) if y]
-            for root, files in tree:
-                tmp.extend(map((lambda x: os.path.join(root, x)), files))
+    except FileNotFoundError as err:
+        return 1
 
-        elif os.path.isdir(path):
-            logger.info("Entering {0}.".format(path))
-            tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
+    except localpath.error.MatchNotFoundError:
+        return 1
 
-        else:
-            logger.info("Listing {0}.".format(path))
-            tmp = [path]
-
-        filesList.extend(tmp)
-
-    if not filesList:
-        logger.error("No valid file(s) found.")
-        sys.exit()
-
-    filesList = [x for x in filesList if not os.path.isdir(x)]
-
-    showFiles = []
-    for entry in filesList:
-        try:
-            logger.info("Trying to match patterns to {0}.".format(os.path.basename(entry)))
-            fileObj = localpath.SerieFile(entry)
-            showFiles.append(fileObj)
-
-        except localpath.error.MatchNotFoundError as err:
-            logger.warn(err)
-
-    if not showFiles:
-        logger.error("No valid filename(s) found.")
-        sys.exit()
-
-    showEps = {}
-    for show in set((x.title, x.country, x.year, x.identifier) for x in showFiles):
-        try:
-            logger.info("Downloading information for {0}.".format(show[0].upper()))
-            showEps[show[3]] = web.TvShow(show[0], show[1], show[2])
-
-        except (web.error.DownloadError, web.error.NotFoundError) as err:
-            logger.warn(err)
-            showFiles = [x for x in showFiles if x.title != show[0]]
-
-    if showEps:
-        for show in showEps.values():
-            logger.info("Downloading episodes list for {0}.".format(show.title))
-            show.populate()
+    except web.error.NotFoundError as err:
+        return 1
 
     else:
-        logger.error("Could not download list of episodes for any show.")
-        sys.exit()
+        web.populateShows(showInfo)
 
     logger.info("Setting new filename(s).")
-    for ep in showFiles:
-        serie = showEps[ep.identifier].title
-        showEps[ep.identifier].season = ep.season
-        episode = "-".join(ep.episodes)
-        title = "-".join([showEps[ep.identifier].seasonEps[x] for x in ep.episodes])
-        newFileName = "{1}x{2} - {3}" if args.simple else "{0} - {1}x{2} - {3}"
-
-        ep.newFileName = newFileName.format(serie, ep.season, episode, title)
-
+    buildNewFileNames(showFiles, showInfo, args.simple)
     showFiles.sort(key=lambda x: x.newFileName)
-    for i in showFiles:
-        print("--- {0}\n+++ {1}".format(i.curFileName, i.newFileName))
+    printableList = [
+        "--- {0}\n+++ {1}".format(i.curFileName, i.newFileName)
+        for i in showFiles
+    ]
+    print("\n".join(printableList))
 
-    if not args.no_confirm:
-        anws = input("Apply changes? [Y/n]: ")
-        if anws in ["N", "n"]:
-            sys.exit(1)
+    if not askApplyChanges(args.no_confirm):
+        return 0
 
     for ep in showFiles:
         try:
@@ -126,6 +116,8 @@ def main():
         except PermissionError as err:
             strerr = "Can't rename {0} - {1}.".format(ep.curFileName, err.strerror)
             logger.error(strerr)
+
+    return 0
 
 
 if __name__ == "__main__":
