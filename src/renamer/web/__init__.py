@@ -40,6 +40,6 @@ def genShowsDict(showFiles):
 
 
 def populateShows(showInfo):
-    for show in showInfo:
+    for show in showInfo.values():
         logger.info("Downloading episodes list for {0}.".format(show.title))
         show.populate()
