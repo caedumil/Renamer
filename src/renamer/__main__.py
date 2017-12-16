@@ -15,6 +15,10 @@ from renamer import localpath
 
 
 def setupLogger(loglevel):
+    logger = logging.getLogger("Renamer")
+    logLevel = getattr(logging, loglevel.upper(), None)
+    logger.setLevel(logLevel)
+
     consoleOut = logging.StreamHandler()
     consoleFormat = logging.Formatter("%(levelname)s - %(message)s")
     consoleOut.setLevel(logging.INFO)
@@ -22,17 +26,13 @@ def setupLogger(loglevel):
 
     logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
     logPath = os.path.join(logDir, "renamer.log")
-    logLevel = getattr(logging, loglevel.upper(), None)
     fileOut = logging.FileHandler(logPath, mode="w")
     fileFormat = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
     fileOut.setLevel(logging.WARN)
     fileOut.setFormatter(fileFormat)
 
-    logger = logging.getLogger("Renamer")
-    logger.setLevel(logLevel)
     logger.addHandler(consoleOut)
     logger.addHandler(fileOut)
-
     return logger
 
 

@@ -16,7 +16,7 @@ from . import types, error
 #
 # Global var
 #
-logger = logging.getLogger("Web")
+logger = logging.getLogger("Renamer.Web")
 
 
 #
