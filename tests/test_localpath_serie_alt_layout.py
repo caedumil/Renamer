@@ -23,7 +23,7 @@ def test_serie_alt_numbers():
     assert test.episodes == ['25']
 
 
-def broken_test_serie_alt_with_year():
+def test_serie_alt_with_year():
     name = 'some.show.2017.125.foo.bar.ext'
     test = types.SerieFile(name)
     assert test.title == 'Some Show'

@@ -164,7 +164,8 @@ class SerieFile(LocalPath):
             eps = re.findall("\d{2}", info)
 
         elif rAltFormat.search(self.curFileName):
-            show, _, info = rAltFormat.split(self.curFileName)[:3]
+            show_piece, year, info = rAltFormat.split(self.curFileName)[:3]
+            show = "{}{}".format(show_piece, year) if year else show_piece
 
             info_lst = list(info)
             info_lst.reverse()
