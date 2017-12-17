@@ -37,7 +37,7 @@ class Web():
             return text
 
     def searchShow(self, title):
-        saneTitle = (lambda x: re.sub("\W", "+", x))(title)
+        saneTitle = re.sub("\W", "+", title)
         url = [self.url]
         url.extend(["search", "q={}".format(saneTitle)])
         link = "&".join(url)

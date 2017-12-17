@@ -10,7 +10,7 @@ def test_tvshow_simple():
     assert test.thetvdb == 78809
 
 
-def broken_test_tvshow_numbers():
+def test_tvshow_numbers():
     name = '11 22 63'
     test = types.TvShow(name)
     assert test.title == '11.22.63'
