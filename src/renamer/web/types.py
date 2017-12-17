@@ -118,10 +118,6 @@ class TvShow(Web):
         return self._show.title
 
     @property
-    def thetvdb(self):
-        return self._show.thetvdb
-
-    @property
     def season(self):
         return self._curSeason
 
@@ -137,3 +133,7 @@ class TvShow(Web):
     @property
     def seasonEps(self):
         return self._season
+
+    @property
+    def thetvdb(self):
+        return self._show.thetvdb

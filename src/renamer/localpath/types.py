@@ -192,24 +192,24 @@ class SerieFile(LocalPath):
         return False
 
     @property
+    def title(self):
+        return self._show.get("title")
+
+    @property
     def country(self):
         return self._show.get("country")
 
     @property
-    def episodes(self):
-        return self._show.get("episodes")
+    def year(self):
+        return self._show.get("year")
 
     @property
     def season(self):
         return self._show.get("season")
 
     @property
-    def title(self):
-        return self._show.get("title")
-
-    @property
-    def year(self):
-        return self._show.get("year")
+    def episodes(self):
+        return self._show.get("episodes")
 
     @property
     def identifier(self):
