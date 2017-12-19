@@ -1,0 +1,37 @@
+# Version file.
+# to be used with pyinstaller --version-file option on windows builds.
+#
+# For more details see:
+# https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058(v=vs.85).aspx
+
+VSVersionInfo(
+    ffi=FixedFileInfo(
+        filevers=(0, 2, 3, 1),
+        prodvers=(0, 2, 3, 0),
+        mask=0x0,
+        flags=0x0,
+        OS=0x4,
+        fileType=0x1,
+        subtype=0x0,
+        date=(0, 0)
+    ),
+    kids=[
+        StringFileInfo([
+            StringTable(
+                "040904B0",
+                [
+                    StringStruct("CompanyName", "Caedus75"),
+                    StringStruct("ProductName", "Renamer"),
+                    StringStruct("ProductVersion", "0.2.3"),
+                    StringStruct("InternalName", "renamer"),
+                    StringStruct("OriginalFilename", "renamer.exe"),
+                    StringStruct("FileVersion", "0.2.3-1"),
+                    StringStruct("FileDescription", "Renamer v0.2.3"),
+                    StringStruct("LegalCopyright", "Copyright (c) 2014-2017, Carlos Millett"),
+                    StringStruct("LegalTrademarks", "")
+                ]
+            )
+        ]),
+        VarFileInfo([VarStruct("Translation", [1033, 1200])])
+    ]
+)
