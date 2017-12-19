@@ -8,12 +8,11 @@ season number, episode number and episode name.
 By default it will look online for the information.
 
 - [TV Shows](http://www.tvmaze.com/)
-- [Movies](http://www.omdbapi.com)
 
 
 ## How to use?
 
-    renamer.py [-h] [-v] [-y] [-c] FOLDER [FOLDER ...]
+    renamer [-h] [-v] [-y] [-c] FOLDER [FOLDER ...]
 
 * `-h`, `--help` help message
 * `-v`, `--version` version information
