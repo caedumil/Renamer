@@ -38,12 +38,18 @@ def setupLogger(loglevel):
 
 def buildNewFileNames(showFiles, showInfo, short=False):
     for ep in showFiles:
-        serie = showInfo[ep.identifier].title
-        showInfo[ep.identifier].season = ep.season
-        episode = "-".join(ep.episodes)
-        title = "-".join([showInfo[ep.identifier].seasonEps[x] for x in ep.episodes])
-        newFileName = "{1}x{2} - {3}" if short else "{0} - {1}x{2} - {3}"
-        ep.newFileName = newFileName.format(serie, ep.season, episode, title)
+        try:
+            serie = showInfo[ep.identifier].title
+            showInfo[ep.identifier].season = ep.season
+            episode = "-".join(ep.episodes)
+            title = "-".join([showInfo[ep.identifier].seasonEps[x] for x in ep.episodes])
+            newFileName = "{1}x{2} - {3}" if short else "{0} - {1}x{2} - {3}"
+
+        except KeyError:
+            showFiles = [x for x in showFiles if x != ep]
+
+        else:
+            ep.newFileName = newFileName.format(serie, ep.season, episode, title)
 
 
 def askApplyChanges(no_confirmation):
