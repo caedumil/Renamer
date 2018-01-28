@@ -70,7 +70,7 @@ class TvShow(Web):
         showInfo = self.searchShow(title)
         for entry in [x for x in showInfo if x["show"]["premiered"]]:
             match.set_seq2(genID(entry["show"]["name"]))
-            if match.quick_ratio() < 0.95:
+            if match.quick_ratio() < 0.975:
                 continue
 
             network = entry["show"]["network"]
