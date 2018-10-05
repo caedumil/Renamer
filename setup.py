@@ -36,6 +36,8 @@ setup(
         ],
     },
 
+    install_requires=_read("requirements.txt").splitlines(),
+
     keywords="utility rename tv show",
 
     classifiers=[
