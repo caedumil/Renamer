@@ -81,7 +81,7 @@ class TvShow(Web):
             strerror = "Could not find {}.".format(title.upper())
             raise error.NotFoundError(strerror)
 
-        return [x[2] for x in process.extract(title, candidates)]
+        return [x[2] for x in process.extractBests(title, candidates, score_cutoff=75)]
 
     def _selectShow(self, showsList, country, year):
         showsList.sort(key=lambda x: x.premier, reverse=True)
