@@ -33,6 +33,13 @@ def test_tvshow_with_country():
     assert test.thetvdb == 271360
 
 
+def test_show_with_symbol():
+    name = 'Marvels Cloak and Dagger'
+    test = types.TvShow(name)
+    assert test.title == "Marvel's Cloak & Dagger"
+    assert test.thetvdb == 341455
+
+
 def test_tvshow_full():
     name = 'Wanted'
     country = 'AU'
