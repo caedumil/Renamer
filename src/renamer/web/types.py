@@ -11,11 +11,11 @@
 import re
 import json
 import time
-import difflib
 
 from collections import namedtuple
 from urllib import error as urlerr
 from urllib import request as urlRequest
+from fuzzywuzzy import process
 
 from . import error
 
@@ -54,25 +54,14 @@ class TvShow(Web):
         self._show = None
         self._season = None
         self._curSeason = None
-
-        showsList = self._findShow(title)
-        if not showsList:
-            strerror = "Could not find {}.".format(title.upper())
-            raise error.NotFoundError(strerror)
-        self._show = self._selectShow(showsList, country, year)
+        self._show = self._selectShow(self._findShow(title), country, year)
 
     def _findShow(self, title):
         showCand = namedtuple("Show", ["title", "country", "premier", "thetvdb", "link"])
         showsList = []
-        genID = (lambda x: re.sub("\W", "", x.upper()))
 
-        match = difflib.SequenceMatcher(None, genID(title))
         showInfo = self.searchShow(title)
         for entry in [x for x in showInfo if x["show"]["premiered"]]:
-            match.set_seq2(genID(entry["show"]["name"]))
-            if match.quick_ratio() < 0.975:
-                continue
-
             network = entry["show"]["network"]
             webchannel = entry["show"]["webChannel"]
             showProvider = network if network else webchannel
@@ -86,7 +75,13 @@ class TvShow(Web):
                 link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
             )
             showsList.append(newItem)
-        return showsList
+
+        candidates = {x: x.title for x in showsList}
+        if len(candidates) == 0:
+            strerror = "Could not find {}.".format(title.upper())
+            raise error.NotFoundError(strerror)
+
+        return [x[2] for x in process.extract(title, candidates)]
 
     def _selectShow(self, showsList, country, year):
         showsList.sort(key=lambda x: x.premier, reverse=True)
