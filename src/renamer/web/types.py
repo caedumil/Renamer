@@ -15,6 +15,7 @@ import time
 from collections import namedtuple
 from urllib import error as urlerr
 from urllib import request as urlRequest
+
 from fuzzywuzzy import process
 
 from . import error
