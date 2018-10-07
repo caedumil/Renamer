@@ -80,37 +80,36 @@ class TvShow(Web):
             score = fuzz.WRatio(title, item.title)
             showsList.append(showItem(score=score, show=item))
 
-        if len(showsList) == 0:
+        if not showsList:
             strerror = "Could not find {}.".format(title.upper())
             raise error.NotFoundError(strerror)
 
-        return showsList
+        highScore = max([x.score for x in showsList])
+        return [x.show for x in showsList if x.score == highScore]
 
     def _selectShow(self, showsList, country, year):
-        highScore = max([x.score for x in showsList])
-        showsList = [x for x in showsList if x.score == highScore]
-        showsList.sort(key=lambda x: x.show.premier)
+        showsList.sort(key=lambda x: x.premier)
         if year and country:
             selYear = [
                 x for x in showsList
-                if int(year) == time.strptime(x.show.premier, '%Y-%m-%d').tm_year
+                if int(year) == time.strptime(x.premier, '%Y-%m-%d').tm_year
             ]
-            selCountry = [x for x in showsList if country == x.show.country]
+            selCountry = [x for x in showsList if country == x.country]
             sel = list(filter(lambda x: x in selYear, selCountry))
 
         elif year:
             sel = [
                 x for x in showsList
-                if int(year) == time.strptime(x.show.premier, '%Y-%m-%d').tm_year
+                if int(year) == time.strptime(x.premier, '%Y-%m-%d').tm_year
             ]
 
         elif country:
-            sel = [x for x in showsList if country == x.show.country]
+            sel = [x for x in showsList if country == x.country]
 
         else:
             sel = showsList
 
-        return sel[0].show
+        return sel[0]
 
     def populate(self):
         self._epsInfo = self.lookupShow()
