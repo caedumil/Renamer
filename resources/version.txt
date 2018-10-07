@@ -26,7 +26,7 @@ VSVersionInfo(
                     StringStruct("InternalName", "renamer"),
                     StringStruct("OriginalFilename", "renamer.exe"),
                     StringStruct("FileVersion", "0.2.4-1"),
-                    StringStruct("FileDescription", "Renamer v0.2.4-1 (dev)"),
+                    StringStruct("FileDescription", "Renamer v0.2.4-1"),
                     StringStruct("LegalCopyright", "Copyright (c) 2014-2017, Carlos Millett"),
                     StringStruct("LegalTrademarks", "")
                 ]

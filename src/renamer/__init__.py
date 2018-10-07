@@ -12,5 +12,5 @@ the episode title.
 '''
 
 
-__version__ = '0.2.4-dev'
+__version__ = '0.2.4'
 __author__ = 'Carlos Millett <carlos4735@gmail.com>'
