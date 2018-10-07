@@ -88,7 +88,7 @@ class TvShow(Web):
 
     def _selectShow(self, showsList, country, year):
         highScore = max([x.score for x in showsList])
-        showsList = [x for x in showsList if x.score == highScore ]
+        showsList = [x for x in showsList if x.score == highScore]
         showsList.sort(key=lambda x: x.show.premier)
         if year and country:
             selYear = [
