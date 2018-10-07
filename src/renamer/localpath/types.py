@@ -97,7 +97,7 @@ class LocalPath():
         return name.translate(table)
 
     def _formatName(self, name):
-        reSep = re.compile('[\W]+')
+        reSep = re.compile(r'[\W]+')
         reYear = re.compile('[12][0-9]{3}')
         reCountry = re.compile('[A-Z]{2}')
         countryCodes = [
@@ -151,17 +151,17 @@ class LocalPath():
 class SerieFile(LocalPath):
     def __init__(self, filename):
         super().__init__(filename)
-        rSceneRule = re.compile('[ .]S(\d{2})((E\d{2}-?)+)[ .]', re.I)
-        rPreFormat = re.compile(' (\d{2})x((\d{2}-?)+) ')
-        rAltFormat = re.compile('\.(\d{4}.)?(\d{3,})\.')
+        rSceneRule = re.compile(r'[ .]S(\d{2})((E\d{2}-?)+)[ .]', re.I)
+        rPreFormat = re.compile(r' (\d{2})x((\d{2}-?)+) ')
+        rAltFormat = re.compile(r'\.(\d{4}.)?(\d{3,})\.')
 
         if rSceneRule.search(self.curFileName):
             show, season, info = rSceneRule.split(self.curFileName)[:3]
-            eps = re.findall('\d{2}', info)
+            eps = re.findall(r'\d{2}', info)
 
         elif rPreFormat.search(self.curFileName):
             show, season, info = rPreFormat.split(self.curFileName)[:3]
-            eps = re.findall('\d{2}', info)
+            eps = re.findall(r'\d{2}', info)
 
         elif rAltFormat.search(self.curFileName):
             show_piece, year, info = rAltFormat.split(self.curFileName)[:3]
@@ -215,6 +215,6 @@ class SerieFile(LocalPath):
     @property
     def identifier(self):
         if not self._identifier:
-            identifier = re.sub('\W', '', self._show['title'])
+            identifier = re.sub(r'\W', '', self._show['title'])
             self._identifier = identifier.upper()
         return self._identifier
