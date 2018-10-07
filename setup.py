@@ -15,7 +15,7 @@ def _read(fn):
 
 setup(
     name="renamer",
-    version="0.2.4",
+    version="0.2.5",
 
     description="A utility to rename TV files.",
     long_description=_read("README.md"),

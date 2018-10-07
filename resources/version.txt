@@ -6,8 +6,8 @@
 
 VSVersionInfo(
     ffi=FixedFileInfo(
-        filevers=(0, 2, 4, 1),
-        prodvers=(0, 2, 4, 0),
+        filevers=(0, 2, 5, 1),
+        prodvers=(0, 2, 5, 0),
         mask=0x0,
         flags=0x0,
         OS=0x4,
@@ -22,11 +22,11 @@ VSVersionInfo(
                 [
                     StringStruct("CompanyName", "Caedus75"),
                     StringStruct("ProductName", "Renamer"),
-                    StringStruct("ProductVersion", "0.2.4"),
+                    StringStruct("ProductVersion", "0.2.5"),
                     StringStruct("InternalName", "renamer"),
                     StringStruct("OriginalFilename", "renamer.exe"),
-                    StringStruct("FileVersion", "0.2.4-1"),
-                    StringStruct("FileDescription", "Renamer v0.2.4-1"),
+                    StringStruct("FileVersion", "0.2.5-1"),
+                    StringStruct("FileDescription", "Renamer v0.2.5-1"),
                     StringStruct("LegalCopyright", "Copyright (c) 2014-2018, Carlos Millett"),
                     StringStruct("LegalTrademarks", "")
                 ]
