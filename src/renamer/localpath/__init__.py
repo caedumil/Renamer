@@ -16,7 +16,7 @@ from . import types, error
 #
 # Global var
 #
-logger = logging.getLogger("Renamer.Files")
+logger = logging.getLogger('Renamer.Files')
 
 
 #
@@ -26,18 +26,18 @@ def traversePath(path, recursive):
     filesList = []
     for path in [os.path.abspath(x) for x in path if os.path.exists(x)]:
         if recursive and os.path.isdir(path):
-            logger.info("Descending into {0}.".format(path))
+            logger.info('Descending into {0}.'.format(path))
             tmp = []
             tree = [(x, y) for x, _, y in os.walk(path) if y]
             for root, files in tree:
                 tmp.extend(map((lambda x: os.path.join(root, x)), files))
 
         elif os.path.isdir(path):
-            logger.info("Entering {0}.".format(path))
+            logger.info('Entering {0}.'.format(path))
             tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
 
         else:
-            logger.info("Listing {0}.".format(path))
+            logger.info('Listing {0}.'.format(path))
             tmp = [path]
 
         filesList.extend(tmp)
@@ -54,7 +54,7 @@ def genFilesList(path, recursive=False):
     showFiles = []
     for entry in [x for x in filesList if not os.path.isdir(x)]:
         try:
-            logger.info("Trying to match patterns to {0}.".format(os.path.basename(entry)))
+            logger.info('Trying to match patterns to {0}.'.format(os.path.basename(entry)))
             fileObj = types.SerieFile(entry)
 
         except error.MatchNotFoundError as err:

@@ -15,19 +15,19 @@ from renamer import localpath
 
 
 def setupLogger(loglevel):
-    logger = logging.getLogger("Renamer")
+    logger = logging.getLogger('Renamer')
     logLevel = getattr(logging, loglevel.upper(), None)
     logger.setLevel(logLevel)
 
     consoleOut = logging.StreamHandler()
-    consoleFormat = logging.Formatter("%(levelname)s - %(message)s")
+    consoleFormat = logging.Formatter('%(levelname)s - %(message)s')
     consoleOut.setLevel(logging.INFO)
     consoleOut.setFormatter(consoleFormat)
 
-    logDir = os.path.expandvars("%TMP%") if platform.system() == "Windows" else "/tmp"
-    logPath = os.path.join(logDir, "renamer.log")
-    fileOut = logging.FileHandler(logPath, mode="w")
-    fileFormat = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
+    logDir = os.path.expandvars('%TMP%') if platform.system() == 'Windows' else '/tmp'
+    logPath = os.path.join(logDir, 'renamer.log')
+    fileOut = logging.FileHandler(logPath, mode='w')
+    fileFormat = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
     fileOut.setLevel(logging.WARN)
     fileOut.setFormatter(fileFormat)
 
@@ -41,9 +41,9 @@ def buildNewFileNames(showFiles, showInfo, short=False):
         try:
             serie = showInfo[ep.identifier].title
             showInfo[ep.identifier].season = ep.season
-            episode = "-".join(ep.episodes)
-            title = "-".join([showInfo[ep.identifier].seasonEps[x] for x in ep.episodes])
-            newFileName = "{1}x{2} - {3}" if short else "{0} - {1}x{2} - {3}"
+            episode = '-'.join(ep.episodes)
+            title = '-'.join([showInfo[ep.identifier].seasonEps[x] for x in ep.episodes])
+            newFileName = '{1}x{2} - {3}' if short else '{0} - {1}x{2} - {3}'
 
         except KeyError:
             showFiles = [x for x in showFiles if x != ep]
@@ -55,7 +55,7 @@ def buildNewFileNames(showFiles, showInfo, short=False):
 def askApplyChanges(no_confirmation):
     if not no_confirmation:
         anws = input("Apply changes? [Y/n]: ")
-        if anws in ["N", "n"]:
+        if anws in ['N', 'n']:
             return False
     return True
 
@@ -81,11 +81,11 @@ def main():
     else:
         web.populateShows(showInfo)
 
-    logger.info("Setting new filename(s).")
+    logger.info('Setting new filename(s).')
     buildNewFileNames(showFiles, showInfo, args.simple)
     showFiles.sort(key=lambda x: x.newFileName)
     printableList = [
-        "--- {0}\n+++ {1}".format(i.curFileName, i.newFileName)
+        '--- {0}\n+++ {1}'.format(i.curFileName, i.newFileName)
         for i in showFiles
     ]
     print("\n".join(printableList))
@@ -107,5 +107,5 @@ def main():
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

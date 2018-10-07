@@ -34,14 +34,14 @@ class Web():
 
         else:
             data = down.read()
-            text = json.loads(data.decode("UTF-8"))
+            text = json.loads(data.decode('UTF-8'))
             return text
 
     def searchShow(self, title):
-        saneTitle = re.sub("\W", "+", title)
+        saneTitle = re.sub('\W', '+', title)
         url = [self.url]
-        url.extend(["search", "q={}".format(saneTitle)])
-        link = "&".join(url)
+        url.extend(['search', 'q={}'.format(saneTitle)])
+        link = '&'.join(url)
         return self._downloadData(link)
 
     def lookupShow(self):
@@ -51,30 +51,30 @@ class Web():
 
 class TvShow(Web):
     def __init__(self, title, country=None, year=None):
-        self.url = "http://api.tvmaze.com/search/shows?"
+        self.url = 'http://api.tvmaze.com/search/shows?'
         self._show = None
         self._season = None
         self._curSeason = None
         self._show = self._selectShow(self._findShow(title), country, year)
 
     def _findShow(self, title):
-        showCandidate = namedtuple("ShowInfo", ["title", "country", "premier", "thetvdb", "link"])
-        showItem = namedtuple("ShowItem", ["score", "show"])
+        showCandidate = namedtuple('ShowInfo', ['title', 'country', 'premier', 'thetvdb', 'link'])
+        showItem = namedtuple('ShowItem', ['score', 'show'])
         showsList = []
 
         showInfo = self.searchShow(title)
-        for entry in [x for x in showInfo if x["show"]["premiered"]]:
-            network = entry["show"]["network"]
-            webchannel = entry["show"]["webChannel"]
+        for entry in [x for x in showInfo if x['show']['premiered']]:
+            network = entry['show']['network']
+            webchannel = entry['show']['webChannel']
             showProvider = network if network else webchannel
-            countryCode = showProvider["country"]["code"] if showProvider["country"] else None
+            countryCode = showProvider['country']['code'] if showProvider['country'] else None
 
             item = showCandidate(
-                title=entry["show"]["name"],
+                title=entry['show']['name'],
                 country=countryCode,
-                premier=entry["show"]["premiered"],
-                thetvdb=entry["show"]["externals"]["thetvdb"],
-                link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
+                premier=entry['show']['premiered'],
+                thetvdb=entry['show']['externals']['thetvdb'],
+                link='{}/episodes'.format(entry['show']['_links']['self']['href'])
             )
 
             score = fuzz.WRatio(title, item.title)
@@ -93,7 +93,7 @@ class TvShow(Web):
         if year and country:
             selYear = [
                 x for x in showsList
-                if int(year) == time.strptime(x.show.premier, "%Y-%m-%d").tm_year
+                if int(year) == time.strptime(x.show.premier, '%Y-%m-%d').tm_year
             ]
             selCountry = [x for x in showsList if country == x.show.country]
             sel = list(filter(lambda x: x in selYear, selCountry))
@@ -101,7 +101,7 @@ class TvShow(Web):
         elif year:
             sel = [
                 x for x in showsList
-                if int(year) == time.strptime(x.show.premier, "%Y-%m-%d").tm_year
+                if int(year) == time.strptime(x.show.premier, '%Y-%m-%d').tm_year
             ]
 
         elif country:
@@ -128,8 +128,8 @@ class TvShow(Web):
         if self._curSeason != season:
             self._curSeason = season
             self._season = {
-                "{:0>2}".format(x["number"]): x["name"]
-                for x in self._epsInfo if "{:0>2}".format(x["season"]) == self._curSeason
+                '{:0>2}'.format(x['number']): x['name']
+                for x in self._epsInfo if '{:0>2}'.format(x['season']) == self._curSeason
             }
 
     @property

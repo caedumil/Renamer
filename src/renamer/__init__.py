@@ -5,12 +5,12 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-"""
+'''
 Renamer renames your TV files into a nice new format.
 The new filename includes the TV show name, season and episode numbers and
 the episode title.
-"""
+'''
 
 
-__version__ = "0.2.4-dev"
-__author__ = "Carlos Millett <carlos4735@gmail.com>"
+__version__ = '0.2.4-dev'
+__author__ = 'Carlos Millett <carlos4735@gmail.com>'

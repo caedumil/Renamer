@@ -16,7 +16,7 @@ from . import types, error
 #
 # Global var
 #
-logger = logging.getLogger("Renamer.Web")
+logger = logging.getLogger('Renamer.Web')
 
 
 #
@@ -26,7 +26,7 @@ def genShowsDict(showFiles):
     showInfo = {}
     for show in set((x.title, x.country, x.year, x.identifier) for x in showFiles):
         try:
-            logger.info("Downloading information for {0}.".format(show[0].upper()))
+            logger.info('Downloading information for {0}.'.format(show[0].upper()))
             showInfo[show[3]] = types.TvShow(show[0], show[1], show[2])
 
         except (error.DownloadError, error.NotFoundError) as err:
@@ -41,5 +41,5 @@ def genShowsDict(showFiles):
 
 def populateShows(showInfo):
     for show in showInfo.values():
-        logger.info("Downloading episodes list for {0}.".format(show.title))
+        logger.info('Downloading episodes list for {0}.'.format(show.title))
         show.populate()
