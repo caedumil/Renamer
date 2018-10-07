@@ -16,7 +16,7 @@ from collections import namedtuple
 from urllib import error as urlerr
 from urllib import request as urlRequest
 
-from fuzzywuzzy import process
+from fuzzywuzzy import fuzz
 
 from . import error
 
@@ -58,7 +58,8 @@ class TvShow(Web):
         self._show = self._selectShow(self._findShow(title), country, year)
 
     def _findShow(self, title):
-        showCand = namedtuple("Show", ["title", "country", "premier", "thetvdb", "link"])
+        showCandidate = namedtuple("ShowInfo", ["title", "country", "premier", "thetvdb", "link"])
+        showItem = namedtuple("ShowItem", ["score", "show"])
         showsList = []
 
         showInfo = self.searchShow(title)
@@ -68,43 +69,48 @@ class TvShow(Web):
             showProvider = network if network else webchannel
             countryCode = showProvider["country"]["code"] if showProvider["country"] else None
 
-            newItem = showCand(
+            item = showCandidate(
                 title=entry["show"]["name"],
                 country=countryCode,
                 premier=entry["show"]["premiered"],
                 thetvdb=entry["show"]["externals"]["thetvdb"],
                 link="{}/episodes".format(entry["show"]["_links"]["self"]["href"])
             )
-            showsList.append(newItem)
 
-        candidates = {x: x.title for x in showsList}
-        if len(candidates) == 0:
+            score = fuzz.WRatio(title, item.title)
+            showsList.append(showItem(score=score, show=item))
+
+        if len(showsList) == 0:
             strerror = "Could not find {}.".format(title.upper())
             raise error.NotFoundError(strerror)
 
-        return [x[2] for x in process.extractBests(title, candidates, score_cutoff=75)]
+        return showsList
 
     def _selectShow(self, showsList, country, year):
-        showsList.sort(key=lambda x: x.premier, reverse=True)
+        highScore = max([x.score for x in showsList])
+        showsList = [x for x in showsList if x.score == highScore ]
+        showsList.sort(key=lambda x: x.show.premier)
         if year and country:
             selYear = [
-                x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year
+                x for x in showsList
+                if int(year) == time.strptime(x.show.premier, "%Y-%m-%d").tm_year
             ]
-            selCountry = [x for x in showsList if country == x.country]
+            selCountry = [x for x in showsList if country == x.show.country]
             sel = list(filter(lambda x: x in selYear, selCountry))
 
         elif year:
             sel = [
-                x for x in showsList if int(year) == time.strptime(x.premier, "%Y-%m-%d").tm_year
+                x for x in showsList
+                if int(year) == time.strptime(x.show.premier, "%Y-%m-%d").tm_year
             ]
 
         elif country:
-            sel = [x for x in showsList if country == x.country]
+            sel = [x for x in showsList if country == x.show.country]
 
         else:
             sel = showsList
 
-        return sel.pop()
+        return sel[0].show
 
     def populate(self):
         self._epsInfo = self.lookupShow()
