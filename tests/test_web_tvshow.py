@@ -40,6 +40,13 @@ def test_show_with_symbol():
     assert test.thetvdb == 341455
 
 
+def test_show_with_ambiguity():
+    name = 'The Gifted'
+    test = types.TvShow(name)
+    assert test.title == 'The Gifted'
+    assert test.thetvdb == 328552
+
+
 def test_tvshow_full():
     name = 'Wanted'
     country = 'AU'
