@@ -107,7 +107,7 @@ class TvShow(Web):
             sel = [x for x in showsList if country == x.country]
 
         else:
-            sel = showsList
+            sel = [x for x in showsList if x.thetvdb]
 
         return sel[0]
 
