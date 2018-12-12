@@ -8,4 +8,5 @@
 #
 # Import
 #
+from .types import SerieFile, matchShow
 from .utils import traversePath, genFilesList
