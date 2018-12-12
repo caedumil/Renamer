@@ -99,7 +99,7 @@ class LocalPath():
     def _formatName(self, name):
         reSep = re.compile(r'[\W]+')
         reYear = re.compile('[12][0-9]{3}')
-        reCountry = re.compile('[A-Z]{2}')
+        reCountry = re.compile(r'[\W]([A-Z]{2})[\W]?')
         countryCodes = [
             'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS',
             'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG',
