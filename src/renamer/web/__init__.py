@@ -8,4 +8,5 @@
 #
 # Import
 #
+from .types import TvShow, findShow, selectShow
 from .utils import genShowsDict, populateShows
