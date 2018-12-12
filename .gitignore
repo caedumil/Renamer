@@ -40,5 +40,8 @@ pip-delete-this-directory.txt
 venv/
 ENV/
 
+# VS Code
+.vscode
+
 #
 .cache
