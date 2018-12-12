@@ -36,7 +36,7 @@ setup(
         ],
     },
 
-    install_requires=_read("requirements.txt").splitlines(),
+    install_requires=['fuzzywuzzy', 'python-Levenshtein'],
 
     keywords="utility rename tv show",
 
