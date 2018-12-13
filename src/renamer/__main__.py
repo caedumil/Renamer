@@ -9,9 +9,9 @@ import os
 import logging
 import platform
 
-from renamer import cli
-from renamer import web
-from renamer import localpath
+from . import cli
+from . import web
+from . import localpath
 
 
 def setupLogger(loglevel):

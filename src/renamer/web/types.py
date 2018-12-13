@@ -7,6 +7,7 @@
 
 import time
 from collections import namedtuple
+
 from fuzzywuzzy import fuzz
 
 from . import provider, error
