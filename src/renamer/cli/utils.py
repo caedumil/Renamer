@@ -39,13 +39,16 @@ def main(args, logger):
         showInfo = web.genShowsDict(showFiles)
 
     except FileNotFoundError as err:
+        logger.error(err)
         return 1
 
-    except localpath.error.MatchNotFoundError:
-        return 1
+    except localpath.error.MatchNotFoundError as err:
+        logger.error(err)
+        return 3
 
     except web.error.NotFoundError as err:
-        return 1
+        logger.error(err)
+        return 5
 
     else:
         web.populateShows(showInfo)
