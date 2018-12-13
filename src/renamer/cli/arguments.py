@@ -7,7 +7,7 @@
 
 import argparse
 
-from . import __version__
+from .. import __version__
 
 
 def setParser():
