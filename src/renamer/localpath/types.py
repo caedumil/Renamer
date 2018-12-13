@@ -5,21 +5,14 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import os
 import re
-
 from itertools import zip_longest
 from shutil import move
 
 from . import error
 
 
-#
-# Class
-#
 class LocalPath():
     def __init__(self, filename):
         self._curFileName = os.path.basename(filename)
@@ -191,9 +184,6 @@ class SerieFile(LocalPath):
         return self._identifier
 
 
-#
-# Function
-#
 def matchShow(fileName):
     rSceneRule = re.compile(r'[ .]S(\d{2})((E\d{2}-?)+)[ .]', re.I)
     rPreFormat = re.compile(r' (\d{2})x((\d{2}-?)+) ')

@@ -5,17 +5,11 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import argparse
 
 from renamer import __version__
 
 
-#
-# Function
-#
 def setParser():
     parser = argparse.ArgumentParser(prog='renamer')
     parser.add_argument(

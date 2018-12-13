@@ -5,19 +5,12 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import re
 import json
-
 from urllib import error as urlerr
 from urllib import request as urlRequest
 
 
-#
-# Class
-#
 class Provider():
     def _downloadData(self, link):
         try:

@@ -5,25 +5,16 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import time
-
 from collections import namedtuple
 from fuzzywuzzy import fuzz
 
 from . import provider, error
 
-#
-# Global
-#
+
 onlineDB = provider.TVMaze()
 
 
-#
-# Class
-#
 class TvShow():
     def __init__(self, title, country=None, year=None):
         self._show = None
@@ -60,9 +51,6 @@ class TvShow():
         return self._show.thetvdb
 
 
-#
-# Function
-#
 def findShow(title):
     showCandidate = namedtuple('ShowInfo', ['title', 'country', 'premier', 'thetvdb', 'link'])
     showItem = namedtuple('ShowItem', ['score', 'show'])

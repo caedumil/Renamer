@@ -5,9 +5,6 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Exception
-#
 class MatchNotFoundError(Exception):
     '''Raise when show title, season or episodes can't be detected.'''
 

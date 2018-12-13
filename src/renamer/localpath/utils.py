@@ -5,24 +5,15 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import os
 import logging
 
 from . import types, error
 
 
-#
-# Global var
-#
 logger = logging.getLogger('Renamer.Files')
 
 
-#
-# Function
-#
 def traversePath(path, recursive):
     filesList = []
     for path in [os.path.abspath(x) for x in path if os.path.exists(x)]:

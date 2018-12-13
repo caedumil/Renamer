@@ -5,8 +5,5 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 from .types import SerieFile, matchShow
 from .utils import traversePath, genFilesList

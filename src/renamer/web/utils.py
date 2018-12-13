@@ -5,23 +5,14 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Import
-#
 import logging
 
 from . import types, error
 
 
-#
-# Global var
-#
 logger = logging.getLogger('Renamer.Web')
 
 
-#
-# Function
-#
 def genShowsDict(showFiles):
     showInfo = {}
     for show in set((x.title, x.country, x.year, x.identifier) for x in showFiles):

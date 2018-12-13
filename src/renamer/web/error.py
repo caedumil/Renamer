@@ -5,9 +5,6 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-#
-# Exception
-#
 class DownloadError(Exception):
     '''Raise when page cannot be downloaded.'''
 
