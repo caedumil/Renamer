@@ -10,6 +10,8 @@ import json
 from urllib import error as urlerr
 from urllib import request as urlRequest
 
+from . import error
+
 
 class Provider():
     def _downloadData(self, link):
