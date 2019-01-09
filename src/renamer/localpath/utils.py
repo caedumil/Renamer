@@ -62,6 +62,7 @@ def genFilesList(path, recursive=False):
 
     return showFiles
 
+
 def matchShow(fileName):
     rSceneRule = re.compile(r'[ .]S(\d{2})((E\d{2}-?)+)[ .]', re.I)
     rPreFormat = re.compile(r' (\d{2})x((\d{2}-?)+) ')

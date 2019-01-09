@@ -8,6 +8,7 @@
 from . import cli
 from . import log
 
+
 def main():
     parser = cli.setParser()
     args = parser.parse_args()
