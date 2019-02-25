@@ -5,10 +5,7 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-import logging as _log
-
-from .files import genFilesList
-from .shows import genShowList
+import logging
 
 
-_logger = _log.getLogger('Renamer.Path')
+logger = logging.getLogger('Renamer.Path')
