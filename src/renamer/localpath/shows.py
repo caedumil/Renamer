@@ -33,9 +33,9 @@ class Show():
 
 
 def match(fileName):
-    rSceneRule = re.compile(r'[ .]S(\d{2})((E\d{2}-?)+)[ .]', re.I)
-    rPreFormat = re.compile(r' (\d{2})x((\d{2}-?)+) ')
-    rAltFormat = re.compile(r'\.(\d{4}.)?(\d{3,})\.')
+    rSceneRule = re.compile(r'[ .]S(\d{2})((?:E\d{2}-?)+)[ .]', re.I)
+    rPreFormat = re.compile(r'(?: -)? (\d{2})x((?:\d{2}-?)+) (?: -)?')
+    rAltFormat = re.compile(r'(\.\d{4})?\.(\d{3,})\.')
 
     if rSceneRule.search(fileName):
         show, season, info = rSceneRule.split(fileName)[:3]
