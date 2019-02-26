@@ -27,7 +27,18 @@ class Name():
         return self._year
 
     def combiantions(self):
-        return 'combinations'
+        combinations = [self._title]
+
+        if self._country:
+            combinations.append('{} {}'.format(self._title, self._country))
+
+        if self._year:
+            tmp = []
+            for cmb in combinations:
+                tmp.append('{} {}'.format(cmb, self._year))
+            combinations.extend(tmp)
+
+        return combinations
 
 
 def sanitize(name):
