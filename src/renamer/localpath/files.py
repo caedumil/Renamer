@@ -5,7 +5,6 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-import re
 from os import walk, listdir
 from itertools import zip_longest
 from pathlib import Path
