@@ -78,8 +78,8 @@ def genShowList(filesList):
             logger.warn(err)
 
         else:
-            name = names.parse(info.title)
-            showFiles.append({'show': name, 'info': info})
+            title = names.parse(info.title)
+            showFiles.append({'show': title, 'info': info})
 
     if not showFiles:
         raise error.MatchNotFoundError("No valid filename(s) found.")
