@@ -26,20 +26,6 @@ class Name():
     def year(self):
         return self._year
 
-    def combiantions(self):
-        combinations = [self._title]
-
-        if self._country:
-            combinations.append('{} {}'.format(self._title, self._country))
-
-        if self._year:
-            tmp = []
-            for cmb in combinations:
-                tmp.append('{} {}'.format(cmb, self._year))
-            combinations.extend(tmp)
-
-        return combinations
-
 
 def sanitize(name):
     table = {
@@ -81,9 +67,9 @@ def sanitize(name):
 
 
 def parse(name):
-    reSep = re.compile(r'[\W]+')
-    reYear = re.compile('[12][0-9]{3}')
-    reCountry = re.compile(r'[\W]([A-Z]{2})[\W]?')
+    reSep = re.compile(r'\W+')
+    reYear = re.compile(r'^[12][0-9]{3}$')
+    reCountry = re.compile(r'^([A-Za-z]{2})$')
     countryCodes = [
         'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS',
         'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG',
@@ -110,20 +96,17 @@ def parse(name):
         'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW'
     ]
 
-    nameOnly = country = year = None
-    tmp = name
+    title = country = year = None
+    tmp = reSep.split(name)
 
-    if reCountry.search(name):
-        match = reCountry.findall(name)[0]
+    for word in tmp[-2:]:
+        if reYear.match(word):
+            tmp.remove(word)
+            year = word
 
-        if match in countryCodes:
-            country = 'GB' if match == 'UK' else match
-            tmp = reCountry.sub('', name)
+        if reCountry.match(word) and word.upper() in countryCodes:
+            country = word.upper()
 
-    if reYear.search(name):
-        match = reYear.findall(name)
-        year = match[0]
+    title = ' '.join(tmp)
 
-    nameOnly = reSep.sub(' ', reYear.sub('', tmp)).strip()
-
-    return Name(nameOnly.title(), country, year)
+    return Name(title.upper(), country, year)
