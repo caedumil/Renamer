@@ -10,7 +10,6 @@ from itertools import zip_longest
 
 from . import names
 from . import error
-from .log import logger
 
 
 class Show():
@@ -65,23 +64,3 @@ def match(fileName):
         raise error.MatchNotFoundError(strerror)
 
     return Show(show, season, eps)
-
-
-def genShowList(filesList):
-    showFiles = []
-    for entry in [x for x in filesList if not x.is_dir()]:
-        try:
-            logger.info('Trying to match patterns to {0}.'.format(entry.name))
-            info = match(entry.name)
-
-        except error.MatchNotFoundError as err:
-            logger.warn(err)
-
-        else:
-            title = names.parse(info.title)
-            showFiles.append({'show': title, 'info': info})
-
-    if not showFiles:
-        raise error.MatchNotFoundError("No valid filename(s) found.")
-
-    return showFiles
