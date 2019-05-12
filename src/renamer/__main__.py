@@ -6,13 +6,13 @@
 
 
 from . import cli
-from . import log
+from . import utils
 
 
 def main():
     parser = cli.setParser()
     args = parser.parse_args()
-    logger = log.setupLogger(args.loglevel)
+    logger = utils.setupLogger(args.loglevel)
 
     return cli.main(args, logger)
 
