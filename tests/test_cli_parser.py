@@ -17,10 +17,9 @@ def test_cli_parser_wrong_log():
 
 def test_cli_parser_flags():
     parser = cli.setParser()
-    args = parser.parse_args(['-s', '-r', '-y', 'test'])
-    assert args.simple is True
+    args = parser.parse_args(['-r', '-y', 'test'])
     assert args.recursive is True
-    assert args.no_confirm is True
+    assert args.yes is True
 
 
 def test_cli_parser_positional():
