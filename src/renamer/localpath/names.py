@@ -18,6 +18,10 @@ class Name():
     def title(self):
         return self._title
 
+    @title.setter
+    def title(self, name):
+        self._title = name
+
     @property
     def country(self):
         return self._country
