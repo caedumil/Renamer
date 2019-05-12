@@ -7,7 +7,7 @@
 
 import argparse
 
-from .. import __version__
+from . import __version__
 
 
 def setParser():
@@ -20,15 +20,9 @@ def setParser():
     )
     parser.add_argument(
         '-y',
-        '--no-confirm',
+        '--yes',
         action='store_true',
-        help='Do not ask for confirmation.'
-    )
-    parser.add_argument(
-        '-s',
-        '--simple',
-        action='store_true',
-        help='Omit show title from filename.'
+        help='Automatically accept all changes.'
     )
     parser.add_argument(
         '-r',
@@ -42,7 +36,7 @@ def setParser():
         metavar='LEVEL',
         default='INFO',
         type=str,
-        choices=['INFO', 'WARN', 'ERROR'],
+        choices=['INFO', 'WARN', 'ERROR', 'DEBUG'],
         help='Set log level (INFO, WARN, ERROR).'
     )
     parser.add_argument(
@@ -52,5 +46,4 @@ def setParser():
         nargs='+',
         help='FILE location.'
     )
-
     return parser
