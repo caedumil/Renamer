@@ -11,8 +11,6 @@ import platform
 from itertools import zip_longest
 from pathlib import Path
 
-from .localpath import error as l_error
-
 
 def setupLogger(loglevel):
     logger = logging.getLogger('Renamer')
