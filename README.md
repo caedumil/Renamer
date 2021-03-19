@@ -1,7 +1,5 @@
 # Renamer.py
 
-[![Build Status](https://travis-ci.org/caedus75/Renamer.svg?branch=master)](https://travis-ci.org/caedus75/Renamer)
-
 Simple script written in python3 to rename downloaded episodes, based on the
 season number, episode number and episode name.
 
