@@ -36,7 +36,7 @@ setup(
         ],
     },
 
-    install_requires=['fuzzywuzzy', 'python-Levenshtein'],
+    install_requires=[],
 
     keywords="utility rename tv show",
 
@@ -49,9 +49,11 @@ setup(
         "License :: OSI Approved :: BSD License",
 
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9"
     ],
 
-    python_requires=">=3.4"
+    python_requires=">=3.6"
 )
