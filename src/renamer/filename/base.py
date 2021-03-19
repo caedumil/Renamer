@@ -16,7 +16,6 @@ class Media(abc.ABC):
         self._type: Types = media_type
         self._path: Path = path
         self._title: str = ''
-        self._folder: str = ''
 
     @property
     def type(self) -> Types:
@@ -35,14 +34,6 @@ class Media(abc.ABC):
     @title.setter
     def title(self, title: str) -> None:
         self._title = title
-
-    @property
-    def folder(self) -> str:
-        return self._folder
-
-    @folder.setter
-    def folder(self, folder: str) -> None:
-        self._folder = folder
 
     @classmethod
     @abc.abstractmethod
