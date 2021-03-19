@@ -12,8 +12,6 @@ from itertools import zip_longest
 from pathlib import Path
 
 from .localpath import error as l_error
-from .provider import error as p_error
-from .provider import tvmaze
 
 
 def setupLogger(loglevel):
@@ -84,24 +82,3 @@ def genShowList(filesList):
         raise error.MatchNotFoundError("No valid filename(s) found.")
 
     return showFiles
-
-
-def genShowsDict(showFiles):
-    logger = logging.getLogger('Renamer.Search')
-    showInfo = {}
-    for show in set(x.get('show') for x in showFiles):
-        try:
-            logger.info("Downloading information for {0}.".format(show.title))
-            info = tvmaze.search(show.title)
-#            info = types.TvShow(show.title, show.country, show.year)
-
-        except (p_error.DownloadError, error.NotFoundError) as err:
-            logger.warn(err)
-
-        else:
-            showInfo[show.title] = info
-
-    if not showInfo:
-        raise p_error.NotFoundError("Could not download episodes names for any show.")
-
-    return showInfo
