@@ -34,3 +34,22 @@ class Series(Media):
         elif cls._rPreFormat.search(filename):
             return cls._rPreFormat.split(filename)[0]
         return ''
+
+    @classmethod
+    def format(cls, filename: str) -> str:
+        scene = cls._rSceneRule.search(filename)
+        prfmt = cls._rPreFormat.search(filename)
+        if scene:
+            season, eps = scene.groups()
+            eps = eps.replace('E', '')
+        elif prfmt:
+            season, eps = prfmt.groups()
+        else:
+            return ''
+
+        title = cls.parse(filename)
+        title_check = map((lambda x: x.isdigit() or x == '.'), title)
+        if not all(title_check):
+            title = title.replace('.', ' ')
+
+        return '{0} - {1}x{2}'.format(title, season, eps)

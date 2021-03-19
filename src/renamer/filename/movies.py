@@ -29,3 +29,8 @@ class Movies(Media):
         if cls._rScene.search(filename):
             return cls._rScene.split(filename)[1]
         return ''
+
+    @classmethod
+    def format(cls, filename: str) -> str:
+        title = cls.parse(filename)
+        return title.replace('.', ' ')

@@ -28,7 +28,7 @@ class Media(abc.ABC):
     @property
     def title(self) -> str:
         if not self._title:
-            self._title = self.parse(self._path.name)
+            self._title = '{0}{1}'.format(self.format(self._path.name), self._path.suffix)
         return self._title
 
     @title.setter
@@ -43,4 +43,9 @@ class Media(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def parse(cls, filename: str) -> str:
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def format(cls, filename: str) -> str:
         pass

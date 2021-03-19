@@ -25,3 +25,7 @@ class Animes(Media):
     @classmethod
     def parse(cls, filename: str) -> str:
         return ''
+
+    @classmethod
+    def format(cls, filename: str) -> str:
+        return ''
