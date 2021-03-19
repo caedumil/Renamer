@@ -1,4 +1,4 @@
-# Copyright (c) 2014 - 2018, Carlos Millett
+# Copyright (c) 2021, Carlos Millett
 # All rights reserved.
 #
 # This software may be modified and distributed under the terms
