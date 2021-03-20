@@ -6,6 +6,7 @@
 
 
 from . import cli
+from .errors import EmptyListError
 from .utils import (
     setupLogger,
     genFilesList,
@@ -19,9 +20,16 @@ def main() -> None:
     args = parser.parse_args()
     logger = setupLogger(args.loglevel)
 
-    filesList = genFilesList(args.path)
-    matchedList = matchFiles(filesList)
-    processFiles(matchedList)
+    try:
+        filesList = genFilesList(args.path)
+        matchedList = matchFiles(filesList)
+        processFiles(matchedList)
+
+    except EmptyListError as err:
+        files = ['\t{0}'.format(x.resolve()) for x in err.files]
+        message = "{0}\n{1}".format(err.message, '\n'.join(files))
+        logger.error(message)
+        return
 
 
 if __name__ == '__main__':

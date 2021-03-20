@@ -9,6 +9,7 @@ import logging
 from pathlib import Path
 from typing import List
 
+from .errors import EmptyListError
 from .filename import (
     Media,
     Animes,
@@ -55,8 +56,7 @@ def genFilesList(target: List[Path]) -> List[Path]:
         filesList.extend(tmp)
 
     if not filesList:
-        logger.error("File(s) not found.")
-        raise FileNotFoundError("File(s) not found.")
+        raise EmptyListError("File(s) not found:", target)
 
     return filesList
 
@@ -78,13 +78,12 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
             logger.info("Movie: {0}.".format(path.name))
             tmp = Movies(path)
         else:
-            logger.warn("No match for {0}.".format(path.name))
+            logger.warning("No match for {0}.".format(path.name))
             continue
         parsedList.append(tmp)
 
     if not parsedList:
-        logger.error("Could not match file(s) to any media type.")
-        raise Exception("Could not match file(s) to any media type.")
+        raise EmptyListError("Could not match file(s) to any media type:", filesList)
 
     return parsedList
 
