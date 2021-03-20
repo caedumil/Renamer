@@ -1,11 +1,7 @@
 # Renamer.py
 
-Simple script written in python3 to rename downloaded episodes, based on the
-season number, episode number and episode name.
-
-By default it will look online for the information.
-
-- [TV Shows](http://www.tvmaze.com/)
+Simple script written in python3 to rename downloaded media by parsing the filename
+to extract the usefull information to rename the file.
 
 
 ## How to use?
