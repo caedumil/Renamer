@@ -5,14 +5,13 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-import os
 import logging
-import platform
-from itertools import zip_longest
 from pathlib import Path
 
+from . import filename
 
-def setupLogger(loglevel):
+
+def setupLogger(loglevel: str) -> logging.Logger:
     logger = logging.getLogger('Renamer')
     logLevel = getattr(logging, loglevel.upper(), None)
     logger.setLevel(logLevel)
@@ -22,8 +21,8 @@ def setupLogger(loglevel):
     consoleOut.setLevel(logging.INFO)
     consoleOut.setFormatter(consoleFormat)
 
-    logDir = os.path.expandvars('%TMP%') if platform.system() == 'Windows' else '/tmp'
-    logPath = os.path.join(logDir, 'renamer.log')
+    logDir = Path('/tmp')
+    logPath = logDir / 'renamer.log'
     fileOut = logging.FileHandler(logPath, mode='w')
     fileFormat = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
     fileOut.setLevel(logging.WARN)
@@ -34,49 +33,53 @@ def setupLogger(loglevel):
     return logger
 
 
-def genFilesList(target, recursive=False):
-    logger = logging.getLogger('Renamer.Path')
+def genFilesList(target: list) -> list:
+    logger = logging.getLogger('Renamer.path')
     filesList = []
-    for path in [os.path.abspath(x) for x in target if os.path.exists(x)]:
-        if recursive and os.path.isdir(path):
-            logger.info('Descending into {0}.'.format(path))
-            tmp = []
-            tree = [(x, y) for x, _, y in os.walk(path) if y]
-            for root, files in tree:
-                tmp.extend(map((lambda x: os.path.join(root, x)), files))
-
-        elif os.path.isdir(path):
-            logger.info('Entering {0}.'.format(path))
-            tmp = map((lambda x: os.path.join(path, x)), os.listdir(path))
-
+    for path in [x.resolve() for x in target if x.exists()]:
+        if path.is_dir():
+            logger.info("Listing {0}.".format(path))
+            tmp = [x.resolve() for x in path.iterdir()]
         else:
-            logger.info('Listing {0}.'.format(path))
+            logger.info("Including {0}.".format(path))
             tmp = [path]
-
         filesList.extend(tmp)
 
     if not filesList:
+        logger.error("File(s) not found.")
         raise FileNotFoundError("File(s) not found.")
 
-    return [Path(x) for x in filesList]
+    return filesList
 
 
-def genShowList(filesList):
-    logger = logging.getLogger('Renamer.Path')
-    showFiles = []
-    for entry in [x for x in filesList if not x.is_dir()]:
-        try:
-            logger.info('Trying to match patterns to {0}.'.format(entry.name))
-            info = match(entry.name)
-
-        except error.MatchNotFoundError as err:
-            logger.warn(err)
-
+def matchFiles(filesList: list) -> list:
+    logger = logging.getLogger('Renamer.filename')
+    parsedList = []
+    for path in filesList:
+        if filename.Animes.match(path.name):
+            logger.info("Anime: {0}.".format(path.name))
+            tmp = filename.Animes(path)
+        elif filename.Series.match(path.name):
+            logger.info("Serie: {0}.".format(path.name))
+            tmp = filename.Series(path)
+        elif filename.Movies.match(path.name):
+            logger.info("Movie: {0}.".format(path.name))
+            tmp = filename.Movies(path)
         else:
-            title = names.parse(info.title)
-            showFiles.append({'show': title, 'info': info})
+            logger.warn("No match for {0}.".format(path.name))
+            continue
+        parsedList.append(tmp)
 
-    if not showFiles:
-        raise error.MatchNotFoundError("No valid filename(s) found.")
+    if not parsedList:
+        logger.error("Could not match file(s) to any media type.")
+        raise Exception("Could not match file(s) to any media type.")
 
-    return showFiles
+    return parsedList
+
+
+def processFiles(filesList: list) -> None:
+    logger = logging.getLogger('Renamer.rename')
+    for media in filesList:
+        newFile = media.path.with_name(media.title)
+        logger.info("\tOLD: {0}.\n\tNEW: {1}.".format(media.path.name, newFile.name))
+        media.path.rename(newFile)

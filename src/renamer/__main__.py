@@ -6,15 +6,22 @@
 
 
 from . import cli
-from . import utils
+from .utils import (
+    setupLogger,
+    genFilesList,
+    matchFiles,
+    processFiles
+)
 
 
 def main():
     parser = cli.setParser()
     args = parser.parse_args()
-    logger = utils.setupLogger(args.loglevel)
+    logger = setupLogger(args.loglevel)
 
-    return cli.main(args, logger)
+    filesList = genFilesList(args.path)
+    filesList = matchFiles(filesList)
+    processFiles(filesList)
 
 
 if __name__ == '__main__':
