@@ -8,7 +8,7 @@ to extract the usefull information to rename the file.
 
 ## How to use?
 
-    renamer [-h] [-v] [-y] [-c] FOLDER [FOLDER ...]
+    renamer [OPTION] FOLDER [FOLDER ...]
 
 * `-h`, `--help` help message
 * `-v`, `--version` version information
