@@ -6,29 +6,18 @@
 
 
 import argparse
+from pathlib import Path
 
 from . import __version__
 
 
-def setParser():
+def setParser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog='renamer')
     parser.add_argument(
         '-v',
         '--version',
         action='version',
         version='%(prog)s v{}'.format(__version__)
-    )
-    parser.add_argument(
-        '-y',
-        '--yes',
-        action='store_true',
-        help='Automatically accept all changes.'
-    )
-    parser.add_argument(
-        '-r',
-        '--recursive',
-        action='store_true',
-        help='Recursively descend into directories.'
     )
     parser.add_argument(
         '-l',
@@ -41,7 +30,7 @@ def setParser():
     )
     parser.add_argument(
         'path',
-        type=str,
+        type=Path,
         metavar='FILE',
         nargs='+',
         help='FILE location.'

@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 
 from renamer import cli
 
@@ -15,15 +16,7 @@ def test_cli_parser_wrong_log():
         parser.parse_args(['-l', 'wrong', 'test'])
 
 
-def test_cli_parser_flags():
-    parser = cli.setParser()
-    args = parser.parse_args(['-r', '-y', 'test'])
-    assert args.recursive is True
-    assert args.yes is True
-
-
 def test_cli_parser_positional():
-    test = ['test', 'file', 'path']
     parser = cli.setParser()
-    args = parser.parse_args(test)
-    assert args.path == test
+    args = parser.parse_args(['test', 'file', 'path'])
+    assert args.path == [Path('test'), Path('file'), Path('path')]
