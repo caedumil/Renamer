@@ -5,7 +5,7 @@
 # of the Simplified BSD License.  See the LICENSE file for details.
 
 
-from . import cli
+from .cli import setParser
 from .errors import EmptyListError
 from .utils import (
     setupLogger,
@@ -16,7 +16,7 @@ from .utils import (
 
 
 def main() -> None:
-    parser = cli.setParser()
+    parser = setParser()
     args = parser.parse_args()
     logger = setupLogger(args.loglevel)
 
