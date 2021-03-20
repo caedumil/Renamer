@@ -7,8 +7,14 @@
 
 import logging
 from pathlib import Path
+from typing import List
 
-from . import filename
+from .filename import (
+    Media,
+    Animes,
+    Series,
+    Movies
+)
 
 
 def setupLogger(loglevel: str) -> logging.Logger:
@@ -33,7 +39,10 @@ def setupLogger(loglevel: str) -> logging.Logger:
     return logger
 
 
-def genFilesList(target: list) -> list:
+def genFilesList(target: List[Path]) -> List[Path]:
+    filesList: List[Path]
+    tmp: List[Path]
+
     logger = logging.getLogger('Renamer.path')
     filesList = []
     for path in [x.resolve() for x in target if x.exists()]:
@@ -52,19 +61,22 @@ def genFilesList(target: list) -> list:
     return filesList
 
 
-def matchFiles(filesList: list) -> list:
+def matchFiles(filesList: List[Path]) -> List[Media]:
+    parsedList: List[Media]
+    tmp: Media
+
     logger = logging.getLogger('Renamer.filename')
     parsedList = []
     for path in filesList:
-        if filename.Animes.match(path.name):
+        if Animes.match(path.name):
             logger.info("Anime: {0}.".format(path.name))
-            tmp = filename.Animes(path)
-        elif filename.Series.match(path.name):
+            tmp = Animes(path)
+        elif Series.match(path.name):
             logger.info("Serie: {0}.".format(path.name))
-            tmp = filename.Series(path)
-        elif filename.Movies.match(path.name):
+            tmp = Series(path)
+        elif Movies.match(path.name):
             logger.info("Movie: {0}.".format(path.name))
-            tmp = filename.Movies(path)
+            tmp = Movies(path)
         else:
             logger.warn("No match for {0}.".format(path.name))
             continue
@@ -77,7 +89,7 @@ def matchFiles(filesList: list) -> list:
     return parsedList
 
 
-def processFiles(filesList: list) -> None:
+def processFiles(filesList: List[Media]) -> None:
     logger = logging.getLogger('Renamer.rename')
     for media in filesList:
         newFile = media.path.with_name(media.title)

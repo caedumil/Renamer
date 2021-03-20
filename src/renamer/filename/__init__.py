@@ -6,6 +6,7 @@
 
 
 from .types import Types
+from .base import Media
 from .animes import Animes
 from .series import Series
 from .movies import Movies
@@ -13,6 +14,7 @@ from .movies import Movies
 
 __all__ = (
     'Types',
+    'Media',
     'Animes',
     'Series',
     'Movies'

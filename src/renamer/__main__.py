@@ -14,14 +14,14 @@ from .utils import (
 )
 
 
-def main():
+def main() -> None:
     parser = cli.setParser()
     args = parser.parse_args()
     logger = setupLogger(args.loglevel)
 
     filesList = genFilesList(args.path)
-    filesList = matchFiles(filesList)
-    processFiles(filesList)
+    matchedList = matchFiles(filesList)
+    processFiles(matchedList)
 
 
 if __name__ == '__main__':
