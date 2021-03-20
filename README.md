@@ -1,5 +1,7 @@
 # Renamer.py
 
+[![Tests](https://github.com/caedus75/Renamer/actions/workflows/python-tests.yml/badge.svg)](https://github.com/caedus75/Renamer/actions/workflows/python-tests.yml)
+
 Simple script written in python3 to rename downloaded media by parsing the filename
 to extract the usefull information to rename the file.
 
