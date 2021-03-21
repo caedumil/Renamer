@@ -84,6 +84,12 @@ class TestSerie:
         assert filename.Series.parse(name) == 'Some.Show'
         assert filename.Series.format(name) == 'Some Show - 01x24-25'
 
+    def test_scene_multiple_eps_lowercase(self):
+        name = 'some.show.s01e24-e25.foo.bar.ext'
+        assert filename.Series.match(name) is True
+        assert filename.Series.parse(name) == 'some.show'
+        assert filename.Series.format(name) == 'some show - 01x24-25'
+
     def test_prefmt_multiple_eps(self):
         name = 'Some Show - 01x24-25 - Full Name.ext'
         assert filename.Series.match(name) is True

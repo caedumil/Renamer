@@ -41,7 +41,12 @@ class Series(Media):
         prfmt = cls._rPreFormat.search(filename)
         if scene:
             season, eps = scene.groups()
-            eps = eps.replace('E', '')
+            eps = eps.translate(
+                {
+                    ord('E'): '',
+                    ord('e'): ''
+                }
+            )
         elif prfmt:
             season, eps = prfmt.groups()
         else:
