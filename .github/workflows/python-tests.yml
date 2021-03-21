@@ -40,7 +40,7 @@ jobs:
         flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest -v
+        pytest --tb=line -v
     - name: Type check with mypy
       run: |
         mypy src
