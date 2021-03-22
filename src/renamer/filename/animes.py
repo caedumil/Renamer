@@ -13,19 +13,33 @@ from .types import Types
 
 
 class Animes(Media):
-    _rRule = re.compile('')
+    _rRule = re.compile(r'\[.+\] ([\w\.\-\ ]+?)(?: S(\d))? - (\d{2,})')
 
     def __init__(self, path: Path) -> None:
         super().__init__(Types.ANIMES, path)
 
     @classmethod
     def match(cls, filename: str) -> bool:
+        if cls._rRule.search(filename):
+            return True
         return False
 
     @classmethod
     def parse(cls, filename: str) -> str:
+        if cls._rRule.search(filename):
+            return cls._rRule.split(filename)[1]
         return ''
 
     @classmethod
     def format(cls, filename: str) -> str:
-        return ''
+        info = cls._rRule.search(filename)
+        if not info:
+            return ''
+
+        title, season, ep = info.groups()
+        if season:
+            fmt = '{0} - S{1:0>2}E{2}'
+        else:
+            fmt = '{0} - S01E{2}'
+
+        return fmt.format(title, season, ep)
