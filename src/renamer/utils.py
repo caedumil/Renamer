@@ -20,12 +20,12 @@ from .filename import (
 
 def setupLogger(loglevel: str) -> logging.Logger:
     logger = logging.getLogger('Renamer')
-    logLevel = getattr(logging, loglevel.upper(), None)
+    logLevel = getattr(logging, loglevel, None)
     logger.setLevel(logLevel)
 
     consoleOut = logging.StreamHandler()
     consoleFormat = logging.Formatter('%(levelname)s - %(message)s')
-    consoleOut.setLevel(logging.INFO)
+    consoleOut.setLevel(logLevel)
     consoleOut.setFormatter(consoleFormat)
 
     logDir = Path('/tmp')
