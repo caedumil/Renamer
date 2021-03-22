@@ -24,7 +24,7 @@ def setParser() -> argparse.ArgumentParser:
         '--loglevel',
         metavar='LEVEL',
         default='INFO',
-        type=str,
+        type=str.upper,
         choices=['INFO', 'WARN', 'ERROR', 'DEBUG'],
         help='Set log level (INFO, WARN, ERROR).'
     )
