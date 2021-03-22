@@ -6,9 +6,7 @@ name: Tests
 
 on:
   push:
-    branches:
-      - master
-      - next
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
