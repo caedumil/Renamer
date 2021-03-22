@@ -16,6 +16,18 @@ class TestAnime:
         assert filename.Animes.parse(name) == ''
         assert filename.Animes.format(name) == ''
 
+    def test_with_season(self):
+        name = '[TAG] Some Anime S2 - 09 [TAG2].ext'
+        assert filename.Animes.match(name) is True
+        assert filename.Animes.parse(name) == 'Some Anime'
+        assert filename.Animes.format(name) == 'Some Anime - S02E09'
+
+    def test_without_season(self):
+        name = '[TAG] Some Anime - 09 [TAG2].ext'
+        assert filename.Animes.match(name) is True
+        assert filename.Animes.parse(name) == 'Some Anime'
+        assert filename.Animes.format(name) == 'Some Anime - S01E09'
+
 
 class TestSerie:
     def test_scene_false(self):
