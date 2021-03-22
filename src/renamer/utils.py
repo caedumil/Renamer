@@ -92,5 +92,5 @@ def processFiles(filesList: List[Media]) -> None:
     logger = logging.getLogger('Renamer.rename')
     for media in filesList:
         newFile = media.path.with_name(media.title)
-        logger.info("\tOLD: {0}.\n\tNEW: {1}.".format(media.path.name, newFile.name))
+        logger.info("\t<<<: {0}.\n\t>>>: {1}.".format(media.path.name, newFile.name))
         media.path.rename(newFile)
