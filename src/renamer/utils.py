@@ -48,10 +48,10 @@ def genFilesList(target: List[Path]) -> List[Path]:
     filesList = []
     for path in [x.resolve() for x in target if x.exists()]:
         if path.is_dir():
-            logger.info("Listing {0}.".format(path))
+            logger.debug("Listing {0}.".format(path))
             tmp = [x.resolve() for x in path.iterdir()]
         else:
-            logger.info("Including {0}.".format(path))
+            logger.debug("Including {0}.".format(path))
             tmp = [path]
         filesList.extend(tmp)
 
@@ -69,13 +69,13 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
     parsedList = []
     for path in filesList:
         if Animes.match(path.name):
-            logger.info("Anime: {0}.".format(path.name))
+            logger.debug("Anime: {0}.".format(path.name))
             tmp = Animes(path)
         elif Series.match(path.name):
-            logger.info("Serie: {0}.".format(path.name))
+            logger.debug("Serie: {0}.".format(path.name))
             tmp = Series(path)
         elif Movies.match(path.name):
-            logger.info("Movie: {0}.".format(path.name))
+            logger.debug("Movie: {0}.".format(path.name))
             tmp = Movies(path)
         else:
             logger.warning("No match for {0}.".format(path.name))
