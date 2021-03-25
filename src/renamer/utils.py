@@ -90,6 +90,7 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
 
 def processFiles(filesList: List[Media]) -> None:
     logger = logging.getLogger('Renamer.rename')
+    filesList.sort(key=(lambda x: x.title))
     for media in filesList:
         logger.debug("Showing changes for approval.")
         logger.info("\t<<<: {0}.\n\t>>>: {1}.".format(media.path.name, media.title))
