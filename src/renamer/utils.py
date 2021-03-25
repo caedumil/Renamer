@@ -93,7 +93,7 @@ def processFiles(filesList: List[Media]) -> None:
     filesList.sort(key=(lambda x: x.title))
     for media in filesList:
         logger.debug("Showing changes for approval.")
-        logger.info("\t<<<: {0}.\n\t>>>: {1}.".format(media.path.name, media.title))
+        logger.info("\t<<<: {0}\n\t>>>: {1}".format(media.path.name, media.title))
 
     anws = input("Continue? [Y/n] ")
     if anws not in ['n', 'N']:
