@@ -6,7 +6,10 @@
 
 
 from .cli import setParser
-from .errors import EmptyListError
+from .errors import (
+    CancelledByUserError,
+    EmptyListError
+)
 from .utils import (
     setupLogger,
     genFilesList,
@@ -29,7 +32,11 @@ def main() -> None:
         files = ['\t{0}'.format(x.resolve()) for x in err.files]
         message = "{0}\n{1}".format(err.message, '\n'.join(files))
         logger.error(message)
-        return
+
+    except CancelledByUserError as err:
+        logger.info(err.message)
+
+    return
 
 
 if __name__ == '__main__':

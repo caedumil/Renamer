@@ -11,7 +11,16 @@ from typing import (
 )
 
 
-class EmptyListError(Exception):
+class Error(Exception):
+    pass
+
+
+class EmptyListError(Error):
     def __init__(self, message: str, files: List[Any]) -> None:
         self.message = message
         self.files = files
+
+
+class CancelledByUserError(Error):
+    def __init__(self, message: str) -> None:
+        self.message = message

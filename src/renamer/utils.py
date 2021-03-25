@@ -9,7 +9,10 @@ import logging
 from pathlib import Path
 from typing import List
 
-from .errors import EmptyListError
+from .errors import (
+    CancelledByUserError,
+    EmptyListError
+)
 from .filename import (
     Media,
     Animes,
@@ -96,9 +99,10 @@ def processFiles(filesList: List[Media]) -> None:
         logger.info("\t<<<: {0}\n\t>>>: {1}".format(media.path.name, media.title))
 
     anws = input("Continue? [Y/n] ")
-    if anws not in ['n', 'N']:
-        for media in filesList:
-            newFile = media.path.with_name(media.title)
-            media.path.rename(newFile)
+    if anws in ['n', 'N']:
+        raise CancelledByUserError("Cancelled by user.")
 
+    for media in filesList:
+        newFile = media.path.with_name(media.title)
+        media.path.rename(newFile)
     return
