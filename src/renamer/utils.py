@@ -91,6 +91,13 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
 def processFiles(filesList: List[Media]) -> None:
     logger = logging.getLogger('Renamer.rename')
     for media in filesList:
-        newFile = media.path.with_name(media.title)
-        logger.info("\t<<<: {0}.\n\t>>>: {1}.".format(media.path.name, newFile.name))
-        media.path.rename(newFile)
+        logger.debug("Showing changes for approval.")
+        logger.info("\t<<<: {0}.\n\t>>>: {1}.".format(media.path.name, media.title))
+
+    anws = input("Continue? [Y/n] ")
+    if anws not in ['n', 'N']:
+        for media in filesList:
+            newFile = media.path.with_name(media.title)
+            media.path.rename(newFile)
+
+    return
