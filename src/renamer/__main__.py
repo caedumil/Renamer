@@ -26,7 +26,7 @@ def main() -> None:
     try:
         filesList = genFilesList(args.path)
         matchedList = matchFiles(filesList)
-        processFiles(matchedList)
+        processFiles(matchedList, args.season)
 
     except EmptyListError as err:
         files = ['\t{0}'.format(x.resolve()) for x in err.files]

@@ -26,6 +26,14 @@ class TestCLI:
         with pytest.raises(SystemExit):
             parser.parse_args(['-l', 'wrong', 'test'])
 
+    def test_cli_parser_with_season(self, parser):
+        args = parser.parse_args(['--season', '99', 'test'])
+        assert args.season == 99
+
+    def test_cli_parser_without_season(self, parser):
+        args = parser.parse_args(['test'])
+        assert args.season == -1
+
     def test_cli_parser_positional(self, parser):
         args = parser.parse_args(['test', 'file', 'path'])
         assert args.path == [Path('test'), Path('file'), Path('path')]

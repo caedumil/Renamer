@@ -6,6 +6,7 @@
 
 
 import logging
+from re import sub
 from pathlib import Path
 from typing import List
 
@@ -91,8 +92,13 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
     return parsedList
 
 
-def processFiles(filesList: List[Media]) -> None:
+def processFiles(filesList: List[Media], season: int) -> None:
     logger = logging.getLogger('Renamer.rename')
+    if season >= 0:
+        for media in filesList:
+            title = sub(r'\d+([Ex])', r'{0:0>2}\1'.format(season), media.title)
+            media.title = title
+
     filesList.sort(key=(lambda x: x.title))
     for media in filesList:
         logger.debug("Showing changes for approval.")

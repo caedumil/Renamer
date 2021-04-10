@@ -29,6 +29,13 @@ def setParser() -> argparse.ArgumentParser:
         help='Set log level (INFO, WARN, ERROR).'
     )
     parser.add_argument(
+        '-s',
+        '--season',
+        default=-1,
+        type=int,
+        help='force SEASON number to the specified value.'
+    )
+    parser.add_argument(
         'path',
         type=Path,
         metavar='FILE',
