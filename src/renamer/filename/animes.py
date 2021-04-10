@@ -37,9 +37,7 @@ class Animes(Media):
             return ''
 
         title, season, ep = info.groups()
-        if season:
-            fmt = '{0} - S{1:0>2}E{2}'
-        else:
-            fmt = '{0} - S01E{2}'
+        if not season:
+            season = '01'
 
-        return fmt.format(title, season, ep)
+        return '{0} - S{1:0>2}E{2}'.format(title, season, ep)
