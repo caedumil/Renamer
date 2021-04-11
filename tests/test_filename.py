@@ -11,7 +11,7 @@ class TestBase:
 
 class TestAnime:
     def test_false(self):
-        name = ''
+        name = 'Some Anime - 09 [TAG2].ext'
         assert filename.Animes.match(name) is False
         assert filename.Animes.parse(name) == ''
         assert filename.Animes.format(name) == ''
