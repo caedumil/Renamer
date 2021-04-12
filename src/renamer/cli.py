@@ -36,6 +36,12 @@ def setParser() -> argparse.ArgumentParser:
         help='force SEASON number to the specified value.'
     )
     parser.add_argument(
+        '--no-confirm',
+        action='store_true',
+        dest='askuser',
+        help='Do not prompt before rename.'
+    )
+    parser.add_argument(
         'path',
         type=Path,
         metavar='FILE',

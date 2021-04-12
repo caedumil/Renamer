@@ -92,7 +92,7 @@ def matchFiles(filesList: List[Path]) -> List[Media]:
     return parsedList
 
 
-def processFiles(filesList: List[Media], season: int) -> None:
+def processFiles(filesList: List[Media], season: int, askUser: bool) -> None:
     logger = logging.getLogger('Renamer.rename')
     if season >= 0:
         for media in filesList:
@@ -104,9 +104,10 @@ def processFiles(filesList: List[Media], season: int) -> None:
         logger.debug("Showing changes for approval.")
         logger.info("\t<<<: {0}\n\t>>>: {1}".format(media.path.name, media.title))
 
-    anws = input("Continue? [Y/n] ")
-    if anws in ['n', 'N']:
-        raise CancelledByUserError("Cancelled by user.")
+    if askUser is True:
+        anws = input("Continue? [Y/n] ")
+        if anws in ['n', 'N']:
+            raise CancelledByUserError("Cancelled by user.")
 
     for media in filesList:
         newFile = media.path.with_name(media.title)
