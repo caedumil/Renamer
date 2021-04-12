@@ -37,7 +37,7 @@ def setParser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         '--no-confirm',
-        action='store_true',
+        action='store_false',
         dest='askuser',
         help='Do not prompt before rename.'
     )

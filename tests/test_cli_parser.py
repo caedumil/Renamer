@@ -36,13 +36,13 @@ class TestCLI:
 
     def test_cli_parser_no_confirm_true(self, parser):
         args = parser.parse_args(['--no-confirm', 'test'])
-        assert args.askuser is True
+        assert args.askuser is False
 
     def test_cli_parser_defaults(self, parser):
         args = parser.parse_args(['test'])
         assert args.loglevel == 'INFO'
         assert args.season == -1
-        assert args.askuser is False
+        assert args.askuser is True
 
     def test_cli_parser_positional(self, parser):
         args = parser.parse_args(['test', 'file', 'path'])
